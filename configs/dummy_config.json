@@ -1,0 +1,36 @@
+{
+  "pipeline": {
+    "dataset": "dummy_data",
+    "normalize": "dummy_normalization",
+    "id": "dummy_id",
+    "model": "dummy_ae",
+    "loss": "dummy_loss",
+    "score": "dummy_score"
+  },
+  "training": {
+    "lr": 1e-4,
+    "epochs": 2,
+    "batch_size": 32,
+    "metrics": ["accuracy"]
+  },
+  "dataset": {
+    "dummy_data": {"dataset_path":  ""}
+  },
+  "normalize": {
+    "dummy_normalization": {}
+  },
+  "id": {
+    "dummy_id": {}
+  },
+  "model": {
+    "dummy_ae": {}
+  },
+  "loss": {
+    "dummy_loss": {}
+  },
+  "score": {
+    "dummy_score": {}
+  }
+
+
+}
