@@ -11,7 +11,9 @@
     "lr": 1e-4,
     "epochs": 2,
     "batch_size": 32,
-    "metrics": ["accuracy"]
+    "metrics": ["accuracy"],
+    "activation": "tanh",
+    "loss": "sparse_categorical_crossentropy"
   },
   "dataset": {
     "dummy_data": {"dataset_path":  ""}

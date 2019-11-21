@@ -1,3 +1,3 @@
 
-def loss():
-    return 'sparse_categorical_crossentropy'
+def losses():
+    return {'activity_regularizer': None, 'kernel_regularizer': None, 'kernel_constraint': None}

@@ -1,0 +1,43 @@
+{
+  "pipeline": {
+    "dataset": "iris_loader",
+    "normalize": "normalizer",
+    "id": "pca_estimate",
+    "model": "auto_encoder",
+    "loss": "dummy_loss",
+    "score": "dummy_score"
+  },
+  "training": {
+    "lr": 1e-4,
+    "epochs": 2,
+    "batch_size": 32,
+    "metrics": ["accuracy"],
+    "loss": "sparse_categorical_crossentropy",
+    "validation_split": 0.1
+  },
+  "dataset": {
+    "dummy_data": {"dataset_path":  ""},
+    "iris_loader": {}
+  },
+  "normalize": {
+    "dummy_normalization": {},
+    "normalizer": {}
+  },
+  "id": {
+    "dummy_id": {},
+    "pca_estimate": {"n_components":  0.99}
+  },
+  "model": {
+    "auto_encoder": {
+      "activation": "tanh"
+    }
+  },
+  "loss": {
+    "dummy_loss": {}
+  },
+  "score": {
+    "dummy_score": {}
+  }
+
+
+}

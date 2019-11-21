@@ -57,22 +57,29 @@ def main(args, config):
     normalizers = _register(normalize, 'normalize')
     id_estimators = _register(id, 'get_id')
     models = _register(model, 'get_model')
-    loss_functions = _register(loss, 'loss')
+    loss_functions = _register(loss, 'losses')
     scoring_functions = _register(score, 'score')
 
     """ Dataset loading """
-    x, y = datasets[config['pipeline']['dataset']](**config['dataset'])
+    x, y = datasets[config['pipeline']['dataset']](**config['dataset'][config['pipeline']['dataset']])
     """ Normalize """
     # todo split in train, test and fit_transform on train and transform on test
-    x = normalizers[config['pipeline']['normalize']](x, **config['normalize'])
+    x = normalizers[config['pipeline']['normalize']](x, **config['normalize'][config['pipeline']['normalize']])
     """ ID estimation """
-    n_hidden = id_estimators[config['pipeline']['id']](x, **config['id'])
+    n_hidden = id_estimators[config['pipeline']['id']](x, **config['id'][config['pipeline']['id']])
+
     """ Auto-Encoder Model """
-    # todo, test if competition models also fit this pipeline otherwise revise.
-    learner = models[config['pipeline']['model']](x, n_hidden, **config['model'])
     """ Loss function and Compile """
+    # todo fix input size parameter
+    learner = models[config['pipeline']['model']](input_size=(4,),
+                                                  n_hidden=n_hidden,
+                                                  activation=config['model'][config['pipeline']['model']]['activation'],
+                                                  loss=cfg_train['loss'],
+                                                  metrics=cfg_train['metrics'],
+                                                  lr=cfg_train['lr'],
+                                                  **loss_functions[config['pipeline']['loss']]())
     # specify log directory
-    l = [config['model'], config['dataset'], str(cfg_train['image_size']), datetime.now().strftime('%Y%m%d-%H%M%S')]
+    l = [config['pipeline']['model'], config['pipeline']['dataset'], datetime.now().strftime('%Y%m%d-%H%M%S')] + list(config['dataset'][config['pipeline']['dataset']].values())
     log_prefix = '_'.join(l)
     logdir = os.path.join('logs', log_prefix)
     logging.info(logdir)
@@ -92,14 +99,12 @@ def main(args, config):
     file_writer = tf.summary.create_file_writer(logdir + '/metrics')
     file_writer.set_as_default()
 
+    learner.fit(x=x, y=x, batch_size=cfg_train['batch_size'], epochs=cfg_train['epochs'], callbacks=[tbc],
+                validation_split=cfg_train['validation_split'])
+
     """ Score Function """
     # todo implement score function
-    # todo move compile into the model folder
-    learner.compile(optimizer=tf.keras.optimizers.Adam(lr=cfg_train['lr']),
-                  loss=loss_functions[config['pipeline']['loss']],
-                  metrics=cfg_train['metrics'])
 
-    learner.fit(x=x, y=x, batch_size=cfg_train['batch:size'], epochs=cfg_train['epochs'], callbacks=[])
     """ Model evaluation """
     # todo implement methods for final model evaluation
 
