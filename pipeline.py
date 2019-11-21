@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 import json
 import os
 import logging
+from datetime import datetime
 
 import tensorflow as tf
 from tensorflow.keras.callbacks import TensorBoard
@@ -68,7 +69,7 @@ def main(args, config):
     n_hidden = id_estimators[config['pipeline']['id']](x, **config['id'])
     """ Auto-Encoder Model """
     # todo, test if competition models also fit this pipeline otherwise revise.
-    learner = models[config['pipeline']['model']](x, **config['model'])
+    learner = models[config['pipeline']['model']](x, n_hidden, **config['model'])
     """ Loss function and Compile """
     # specify log directory
     l = [config['model'], config['dataset'], str(cfg_train['image_size']), datetime.now().strftime('%Y%m%d-%H%M%S')]
@@ -80,7 +81,7 @@ def main(args, config):
     if not os.path.exists(logdir):
         os.makedirs(logdir)
     with open(os.path.join(logdir, 'model_summary.txt'), 'w') as fw:
-        model.summary(print_fn=lambda x: fw.write(x + '\n'))
+        learner.summary(print_fn=lambda x: fw.write(x + '\n'))
 
     # write config file to log directory
     with open(os.path.join(logdir, 'config.json'), 'w') as fw:
@@ -91,12 +92,14 @@ def main(args, config):
     file_writer = tf.summary.create_file_writer(logdir + '/metrics')
     file_writer.set_as_default()
 
-    model.compile(optimizer=tf.keras.optimizers.Adam(lr=cfg_train['lr']),
-                  loss=loss_functions[config['pipeline']['loss']],
-                  metrics=cfg_train['metrics'])
     """ Score Function """
     # todo implement score function
+    # todo move compile into the model folder
+    learner.compile(optimizer=tf.keras.optimizers.Adam(lr=cfg_train['lr']),
+                  loss=loss_functions[config['pipeline']['loss']],
+                  metrics=cfg_train['metrics'])
 
+    learner.fit(x=x, y=x, batch_size=cfg_train['batch:size'], epochs=cfg_train['epochs'], callbacks=[])
     """ Model evaluation """
     # todo implement methods for final model evaluation
 
