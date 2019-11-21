@@ -15,7 +15,7 @@ def AutoEncoder(input_size, n_hidden, activation, loss='sparse_categorical_cross
 
     learner = Model(input_layer, output_layer)
 
-    # todo should the loss module be implemented here or is it applied on a per layer basis? Maybe change.
+    # TODO: should the loss module be implemented here or is it applied on a per layer basis? Maybe change.
     learner.compile(optimizer=tf.keras.optimizers.Adam(lr=lr),
                     loss=loss,
                     metrics=metrics)

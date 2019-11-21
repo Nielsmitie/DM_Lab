@@ -15,7 +15,7 @@ import model
 import loss
 import score
 """
-This document contains the execution of all necessary commands to run the agnos algorithm.
+This document contains the execution of all necessary commands to run the agnos algorithm and its competitors.
 
 It has an auto import function. Every file that is dropped into one of the directories is loaded and evaluated.
 If it conforms to the specifications then the module is added to the list of usable config options.
@@ -25,9 +25,9 @@ The run is then performed by the specifications in the config file.
 
 The syntax of the config file is as follows:
 1. pipeline defines for each step a file that is used to run the experiment.
-1. For each step there is an additional key where all available methods are listed. In this list the params for each
+2. For each step there is an additional key where all available methods are listed. In this list the params for each
     method are defined. (It is possible to only list the used steps) (This is only a separate section to define params)
-1. training: define the hyperparameter used for training
+3. training: define the hyperparameter used for training
 """
 
 
@@ -46,7 +46,7 @@ def parse_args():
     args = ArgumentParser()
     args.add_argument('--debug', action='store_true')
     args.add_argument('--cpu', action='store_true', help='train on CPU')
-    args.add_argument('--config', type=str, default='configs/example.json')
+    args.add_argument('--config', type=str, default='configs/test_config.json')
     return args.parse_args()
 
 
@@ -62,15 +62,18 @@ def main(args, config):
 
     """ Dataset loading """
     x, y = datasets[config['pipeline']['dataset']](**config['dataset'][config['pipeline']['dataset']])
+
     """ Normalize """
-    # todo split in train, test and fit_transform on train and transform on test
+    # TODO: split in train, test and fit_transform on train and transform on test
     x = normalizers[config['pipeline']['normalize']](x, **config['normalize'][config['pipeline']['normalize']])
+
     """ ID estimation """
     n_hidden = id_estimators[config['pipeline']['id']](x, **config['id'][config['pipeline']['id']])
 
     """ Auto-Encoder Model """
+    
     """ Loss function and Compile """
-    # todo fix input size parameter
+    # TODO: fix input size parameter
     learner = models[config['pipeline']['model']](input_size=(4,),
                                                   n_hidden=n_hidden,
                                                   activation=config['model'][config['pipeline']['model']]['activation'],
@@ -103,10 +106,10 @@ def main(args, config):
                 validation_split=cfg_train['validation_split'])
 
     """ Score Function """
-    # todo implement score function
+    # TODO: implement score function
 
     """ Model evaluation """
-    # todo implement methods for final model evaluation
+    # TODO: implement methods for final model evaluation
 
 
 if __name__ == '__main__':
@@ -133,5 +136,3 @@ if __name__ == '__main__':
         config = json.load(fr)
 
     main(args, config)
-
-

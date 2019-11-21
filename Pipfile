@@ -10,7 +10,10 @@ numpy = "*"
 pandas = "*"
 tensorflow = "*"
 scikit-learn = "*"
+scipy = "*"
 jupyter = "*"
+pylint = "*"
+skfeature = {editable = true,git = "https://github.com/jundongl/scikit-feature"}
 
 [requires]
 python_version = "3.7"
