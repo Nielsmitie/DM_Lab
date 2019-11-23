@@ -3,6 +3,7 @@ import json
 import os
 import logging
 from datetime import datetime
+import pandas as pd
 
 import tensorflow as tf
 from tensorflow.keras.callbacks import TensorBoard
@@ -77,7 +78,7 @@ def main(args, config):
     learner = models[config['pipeline']['model']](input_size=(4,),
                                                   n_hidden=n_hidden,
                                                   activation=config['model'][config['pipeline']['model']]['activation'],
-                                                  loss=cfg_train['loss'],
+                                                  loss=config['model'][config['pipeline']['model']]['loss'],
                                                   metrics=cfg_train['metrics'],
                                                   lr=cfg_train['lr'],
                                                   **loss_functions[config['pipeline']['loss']]())
@@ -102,11 +103,15 @@ def main(args, config):
     file_writer = tf.summary.create_file_writer(logdir + '/metrics')
     file_writer.set_as_default()
 
-    learner.fit(x=x, y=x, batch_size=cfg_train['batch_size'], epochs=cfg_train['epochs'], callbacks=[tbc],
-                validation_split=cfg_train['validation_split'])
+    learner.fit(x, x, batch_size=cfg_train['batch_size'], epochs=cfg_train['epochs'], callbacks=[tbc],
+                validation_split=cfg_train['validation_split'], shuffle=True)
 
     """ Score Function """
-    # TODO: implement score function
+    ranking_score = scoring_functions[config['pipeline']['score']](learner, **config['score'][config['pipeline']['score']])
+
+    df = pd.DataFrame(ranking_score, columns=['features'])
+    df = df.sort_values(by='features')
+    print(df)
 
     """ Model evaluation """
     # TODO: implement methods for final model evaluation
