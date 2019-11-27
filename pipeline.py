@@ -4,9 +4,10 @@ import os
 import logging
 from datetime import datetime
 import pandas as pd
+import numpy as np
 
 import tensorflow as tf
-from tensorflow.keras.callbacks import TensorBoard
+from tensorflow.keras.callbacks import TensorBoard, EarlyStopping
 
 # in the following all special directories are imported
 import dataset
@@ -51,6 +52,9 @@ def parse_args():
     return args.parse_args()
 
 
+
+
+
 def main(args, config):
     cfg_train = config['training']
 
@@ -62,10 +66,11 @@ def main(args, config):
     scoring_functions = _register(score, 'score')
 
     """ Dataset loading """
-    x, y = datasets[config['pipeline']['dataset']](**config['dataset'][config['pipeline']['dataset']])
+    x, y, num_classes = datasets[config['pipeline']['dataset']](**config['dataset'][config['pipeline']['dataset']])
 
     """ Normalize """
-    # TODO: split in train, test and fit_transform on train and transform on test
+    # TODO: split in train, test and fit_transform on train and transform on test.
+    #  Is unsupervised do we even need to split?
     x = normalizers[config['pipeline']['normalize']](x, **config['normalize'][config['pipeline']['normalize']])
 
     """ ID estimation """
@@ -74,14 +79,6 @@ def main(args, config):
     """ Auto-Encoder Model """
     
     """ Loss function and Compile """
-    # TODO: fix input size parameter
-    learner = models[config['pipeline']['model']](input_size=(4,),
-                                                  n_hidden=n_hidden,
-                                                  activation=config['model'][config['pipeline']['model']]['activation'],
-                                                  loss=config['model'][config['pipeline']['model']]['loss'],
-                                                  metrics=cfg_train['metrics'],
-                                                  lr=cfg_train['lr'],
-                                                  **loss_functions[config['pipeline']['loss']]())
     # specify log directory
     l = [config['pipeline']['model'], config['pipeline']['dataset'], datetime.now().strftime('%Y%m%d-%H%M%S')] + list(config['dataset'][config['pipeline']['dataset']].values())
     log_prefix = '_'.join(l)
@@ -91,30 +88,57 @@ def main(args, config):
     # write model summary to file
     if not os.path.exists(logdir):
         os.makedirs(logdir)
-    with open(os.path.join(logdir, 'model_summary.txt'), 'w') as fw:
-        learner.summary(print_fn=lambda x: fw.write(x + '\n'))
 
     # write config file to log directory
     with open(os.path.join(logdir, 'config.json'), 'w') as fw:
         json.dump(config, fw, indent=4)
 
-    # tensorbord for logging
-    tbc = TensorBoard(log_dir=logdir, write_images=True, update_freq='batch')
-    file_writer = tf.summary.create_file_writer(logdir + '/metrics')
-    file_writer.set_as_default()
+    params = loss_functions[config['pipeline']['loss']]()
+    params.update(config['model'][config['pipeline']['model']])
 
-    learner.fit(x, x, batch_size=cfg_train['batch_size'], epochs=cfg_train['epochs'], callbacks=[tbc],
-                validation_split=cfg_train['validation_split'], shuffle=True)
+    ranking_score = {}
+    for i in range(cfg_train['repetitions']):
+        repetition_dir = '/rep_' + str(i) + '/'
 
-    """ Score Function """
-    ranking_score = scoring_functions[config['pipeline']['score']](learner, **config['score'][config['pipeline']['score']])
+        if not os.path.exists(logdir + repetition_dir):
+            os.makedirs(logdir + repetition_dir)
 
-    df = pd.DataFrame(ranking_score, columns=['features'])
-    df = df.sort_values(by='features')
+        # tensorbord for logging
+        tbc = TensorBoard(log_dir=logdir + repetition_dir, write_images=True, update_freq='batch')
+
+        # early stopping to reduce the number of epochs
+        early_stopping = EarlyStopping(monitor='val_mean_squared_error', mode='min', restore_best_weights=True,
+                                       patience=cfg_train['patience'])
+
+        learner = models[config['pipeline']['model']](input_size=(x.shape[1],),
+                                                      n_hidden=n_hidden,
+                                                      metrics=cfg_train['metrics'],
+                                                      lr=cfg_train['lr'],
+                                                      **params)
+        with open(os.path.join(logdir, 'model_summary.txt'), 'w') as fw:
+            learner.summary(print_fn=lambda x: fw.write(x + '\n'))
+
+        learner.fit(x, x, batch_size=cfg_train['batch_size'], epochs=cfg_train['epochs'],
+                    callbacks=[tbc, early_stopping],
+                    validation_split=cfg_train['validation_split'], shuffle=True)
+
+        """ Score Function """
+        ranking_score['run_' + str(i)] = scoring_functions[config['pipeline']['score']](learner, **config['score'][config['pipeline']['score']])
+
+    df = pd.DataFrame.from_dict(ranking_score)
+
+    # calculate average and standard deviation
+    df[['average', 'std']] = df.apply(lambda x: (np.mean(x), np.std(x)), result_type='expand', axis=1)
+    # df = df.sort_values(by='features')
+
+    # log the results to the log dir
+    df.to_csv(logdir + '/run_results.csv')
     print(df)
 
     """ Model evaluation """
     # TODO: implement methods for final model evaluation
+    from evaluation import k_means_accuracy
+    k_means_accuracy(x, y, num_clusters=num_classes, feature_rank_values=df['average'].values, top_n=config['evaluation']['k_means_accuracy']['top_n'])
 
 
 if __name__ == '__main__':
