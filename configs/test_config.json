@@ -9,10 +9,12 @@
   },
   "training": {
     "lr": 1e-4,
-    "epochs": 50,
+    "epochs": 10,
     "batch_size": 32,
     "metrics": ["mean_squared_error"],
-    "validation_split": 0.1
+    "validation_split": 0.1,
+    "repetitions": 10,
+    "patience": 50
   },
   "dataset": {
     "dummy_data": {"dataset_path":  ""},
@@ -28,7 +30,8 @@
   },
   "model": {
     "auto_encoder": {
-      "activation": "tanh",
+      "activation_hidden": "tanh",
+      "activation_output": "tanh",
       "loss": "mean_squared_error"
     }
   },
@@ -38,5 +41,10 @@
   "score": {
     "dummy_score": {},
     "score_w": {}
+  },
+  "evaluation": {
+    "k_means_accuracy": {
+      "top_n": [3]
+    }
   }
 }
