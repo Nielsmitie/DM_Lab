@@ -52,10 +52,8 @@ def parse_args():
     return args.parse_args()
 
 
-
-
-
 def main(args, config):
+    tf.executing_eagerly()
     cfg_train = config['training']
 
     datasets = _register(dataset, 'get_dataset')
@@ -79,14 +77,6 @@ def main(args, config):
     """ Auto-Encoder Model """
     
     """ Loss function and Compile """
-    # TODO: fix input size parameter
-    learner = models[config['pipeline']['model']](input_size=(4,),
-                                                  n_hidden=n_hidden,
-                                                  activation=config['model'][config['pipeline']['model']]['activation'],
-                                                  loss=config['model'][config['pipeline']['model']]['loss'],
-                                                  metrics=cfg_train['metrics'],
-                                                  lr=cfg_train['lr'],
-                                                  **loss_functions[config['pipeline']['loss']](**config['loss'][config['pipeline']['loss']]))
 
     # specify log directory
     l = [config['pipeline']['model'], config['pipeline']['dataset'], datetime.now().strftime('%Y%m%d-%H%M%S')] + list(config['dataset'][config['pipeline']['dataset']].values())
@@ -102,7 +92,7 @@ def main(args, config):
     with open(os.path.join(logdir, 'config.json'), 'w') as fw:
         json.dump(config, fw, indent=4)
 
-    params = loss_functions[config['pipeline']['loss']]()
+    params = loss_functions[config['pipeline']['loss']](**config['loss'][config['pipeline']['loss']])
     params.update(config['model'][config['pipeline']['model']])
 
     ranking_score = {}
@@ -119,7 +109,7 @@ def main(args, config):
         early_stopping = EarlyStopping(monitor='val_mean_squared_error', mode='min', restore_best_weights=True,
                                        patience=cfg_train['patience'])
 
-        learner = models[config['pipeline']['model']](input_size=(x.shape[1],),
+        learner = models[config['pipeline']['model']](input_size=(4,),
                                                       n_hidden=n_hidden,
                                                       metrics=cfg_train['metrics'],
                                                       lr=cfg_train['lr'],
