@@ -106,7 +106,7 @@ def main(args, config):
         # tensorbord for logging
         tbc = TensorBoard(log_dir=logdir + repetition_dir, write_images=True, update_freq='batch')
 
-        # early stopping to reduce the number of epochs
+        # early stopping to reduce the number of epochs    df.to_csv(logdir + '/run_results.csv')
         early_stopping = EarlyStopping(monitor='val_mean_squared_error', mode='min', restore_best_weights=True,
                                        patience=cfg_train['patience'])
 
