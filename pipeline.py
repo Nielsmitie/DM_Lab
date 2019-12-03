@@ -103,7 +103,10 @@ def main(args, config):
             os.makedirs(logdir + repetition_dir)
 
         # tensorbord for logging
-        tbc = TensorBoard(log_dir=logdir + repetition_dir, write_images=True, update_freq='batch')
+        tbc = TensorBoard(log_dir=logdir + repetition_dir, write_images=True, update_freq='batch',
+                          # record weight and gradient progress 10 times during training
+                          write_grads=True,
+                          histogram_freq=config['training']['epochs'] // config['training']['hist_n_times'])
 
         # early stopping to reduce the number of epochs
         early_stopping = EarlyStopping(monitor='val_mean_squared_error', mode='min', restore_best_weights=True,

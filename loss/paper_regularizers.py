@@ -4,8 +4,8 @@ from tensorflow.python.keras import backend as K
 
 # todo test if this is really corretly implemented
 # observation: The loss is decreasing faster and with less deviation. Maybe even further
-# compare without regularization: 3.12.19 15:35:02
-# with regularization: 3.12.19 15:43:36
+# compare without regularization: 3.12.19 16:02:37
+# with regularization: 3.12.19 16:07:17
 # but both versions reach the same purity score
 
 
