@@ -4,13 +4,13 @@
     "normalize": "normalizer",
     "id": "pca_estimate",
     "model": "auto_encoder",
-    "loss": "dummy_loss",
+    "loss": "paper_regularizers",
     "score": "score_w"
   },
   "training": {
     "lr": 1e-4,
-    "epochs": 10,
-    "batch_size": 32,
+    "epochs": 100,
+    "batch_size": 8,
     "metrics": ["mean_squared_error"],
     "validation_split": 0.1,
     "repetitions": 10,
@@ -34,11 +34,12 @@
       "activation_hidden": "tanh",
       "activation_output": "tanh",
       "loss": "mean_squared_error",
-      "kernel_initializer": "glorot_uniform"
+      "kernel_initializer": "glorot_normal"
     }
   },
   "loss": {
-    "dummy_loss": {}
+    "dummy_loss": {},
+    "paper_regularizers": {"alpha": 1}
   },
   "score": {
     "dummy_score": {},
@@ -46,7 +47,9 @@
   },
   "evaluation": {
     "k_means_accuracy": {
-      "top_n": [3]
+      "top_n": [
+        3
+      ]
     }
   }
 }
