@@ -79,6 +79,15 @@ def main(args, config):
     """ Auto-Encoder Model """
     
     """ Loss function and Compile """
+    # TODO: fix input size parameter
+    learner = models[config['pipeline']['model']](input_size=(4,),
+                                                  n_hidden=n_hidden,
+                                                  activation=config['model'][config['pipeline']['model']]['activation'],
+                                                  loss=config['model'][config['pipeline']['model']]['loss'],
+                                                  metrics=cfg_train['metrics'],
+                                                  lr=cfg_train['lr'],
+                                                  **loss_functions[config['pipeline']['loss']](**config['loss'][config['pipeline']['loss']]))
+
     # specify log directory
     l = [config['pipeline']['model'], config['pipeline']['dataset'], datetime.now().strftime('%Y%m%d-%H%M%S')] + list(config['dataset'][config['pipeline']['dataset']].values())
     log_prefix = '_'.join(l)
