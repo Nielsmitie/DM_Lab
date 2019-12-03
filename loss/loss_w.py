@@ -12,8 +12,8 @@ from tensorflow.python.keras import backend as K
 def losses(alpha):
     # don't know if l1_l2 is the same as l2-l1 in the paper so reimplementing the procedure
     return {
-        'activity_regularizer': l1_minus_l2(1.0),
-        'kernel_regularizer': None,
+        'activity_regularizer': None,
+        'kernel_regularizer': l1_minus_l2(1.0),
         'kernel_constraint': None}
 
 # based on the build in regularizers from keras
@@ -27,7 +27,7 @@ class L2MinusL1(regularizers.Regularizer):
 
     def __call__(self, x):
         norm = tf.norm(x, ord=2)
-        regularization = self.alpha * K.sum(norm)
+        regularization = self.alpha * norm
 
         return regularization
 
