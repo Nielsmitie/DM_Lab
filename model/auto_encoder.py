@@ -5,7 +5,7 @@ from tensorflow.keras.layers import Input, Dense
 
 # hey used mean squared error for the ae. Page 3 Chapter 2.1
 def AutoEncoder(input_size, n_hidden, activation_hidden='tanh', activation_output='tanh', loss='mean_squared_error',
-                kernel_regularizer=None,
+                kernel_regularizer=None, gradient_regularizer=None,
                 activity_regularizer=None, kernel_constraint=None, lr=1e-4, metrics=None,
                 kernel_initializer='glorot_normal'):
     if metrics is None:
@@ -23,6 +23,13 @@ def AutoEncoder(input_size, n_hidden, activation_hidden='tanh', activation_outpu
                          kernel_initializer=kernel_initializer,
                          name='decoder')(hidden)
     autoencoder = Model(input_layer, output_layer)
+    if gradient_regularizer:
+        layer_name = 'encoder'
+        intermediate_layer_model = Model(inputs=autoencoder.input,
+                                         outputs=autoencoder.get_layer(layer_name).output)
+
+        loss = gradient_regularizer(intermediate_layer_model, loss)
+
     autoencoder.compile(optimizer=tf.keras.optimizers.Adam(lr=lr), loss=loss, metrics=metrics)
     return autoencoder
 
