@@ -2,10 +2,8 @@ import tensorflow as tf
 from tensorflow.keras import regularizers
 from tensorflow.python.keras import backend as K
 
-# todo test if this is really corretly implemented
+# TODO: test if this is really corretly implemented
 # observation: The loss is decreasing faster and with less deviation. Maybe even further
-# compare without regularization: 3.12.19 16:02:37
-# with regularization: 3.12.19 16:07:17
 # but both versions reach the same purity score
 
 
@@ -67,9 +65,7 @@ class L1L2(regularizers.Regularizer):
                 'l2': float(self.l2)}
 
 
-# Aliases.
-
-
+# Aliases
 def l1(l=0.01):
     return L1L2(l1=l)
 
@@ -80,4 +76,3 @@ def l2(l=0.01):
 
 def l1_l2(l1=0.01, l2=0.01):
     return L1L2(l1=l1, l2=l2)
-

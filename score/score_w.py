@@ -10,5 +10,4 @@ def score(model):
     # connected with this feature
     score = np.linalg.norm(weights, ord=np.inf, axis=1)
     # the final score is a importance measure for each feature
-
     return score

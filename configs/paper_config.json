@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "dataset": "iris_loader",
+    "dataset": "mat_loader",
     "normalize": "normalizer",
     "id": "pca_estimate",
     "model": "auto_encoder",
@@ -18,15 +18,13 @@
     "hist_n_times": 10
   },
   "dataset": {
-    "dummy_data": {"dataset_path":  ""},
+    "mat_loader": {"name":  "arcene"},
     "iris_loader": {}
   },
   "normalize": {
-    "dummy_normalization": {},
     "normalizer": {}
   },
   "id": {
-    "dummy_id": {},
     "pca_estimate": {"n_components":  0.99}
   },
   "model": {
@@ -39,7 +37,7 @@
   },
   "loss": {
     "dummy_loss": {},
-    "paper_regularizers": {"alpha": 1}
+    "loss_w": {"alpha": 1}
   },
   "score": {
     "dummy_score": {},
@@ -47,9 +45,10 @@
   },
   "evaluation": {
     "k_means_accuracy": {
-      "top_n": [
-        3
-      ]
+      "top_n": [100]
+    },
+    "r_squared": {
+      "top_n": [100]
     }
   }
 }

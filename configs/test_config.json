@@ -18,15 +18,13 @@
     "hist_n_times": 10
   },
   "dataset": {
-    "dummy_data": {"dataset_path":  ""},
+    "mat_loader": {"name":  ""},
     "iris_loader": {}
   },
   "normalize": {
-    "dummy_normalization": {},
     "normalizer": {}
   },
   "id": {
-    "dummy_id": {},
     "pca_estimate": {"n_components":  0.99}
   },
   "model": {
@@ -46,6 +44,9 @@
   },
   "evaluation": {
     "k_means_accuracy": {
+      "top_n": [3]
+    },
+    "r_squared": {
       "top_n": [3]
     }
   }

@@ -68,7 +68,7 @@ def main(args, config):
 
     """ Normalize """
     # TODO: split in train, test and fit_transform on train and transform on test.
-    #  Is unsupervised do we even need to split?
+    #  Is unsupervised, do we even need to split?
     x = normalizers[config['pipeline']['normalize']](x, **config['normalize'][config['pipeline']['normalize']])
 
     """ ID estimation """
@@ -81,7 +81,7 @@ def main(args, config):
     # specify log directory
     l = [config['pipeline']['model'], config['pipeline']['dataset'], datetime.now().strftime('%Y%m%d-%H%M%S')] + list(config['dataset'][config['pipeline']['dataset']].values())
     log_prefix = '_'.join(l)
-    logdir = os.path.join('logs', log_prefix)
+    logdir = os.path.join('logs/', log_prefix)
     logging.info(logdir)
 
     # write model summary to file
@@ -97,22 +97,21 @@ def main(args, config):
 
     ranking_score = {}
     for i in range(cfg_train['repetitions']):
-        repetition_dir = '/rep_' + str(i) + '/'
+        repetition_dir = os.path.join('rep_' + str(i) + '/')
 
-        if not os.path.exists(logdir + repetition_dir):
-            os.makedirs(logdir + repetition_dir)
-
+        if not os.path.exists(os.path.join(logdir, repetition_dir)):
+            os.makedirs(os.path.join(logdir, repetition_dir))
         # tensorbord for logging
-        tbc = TensorBoard(log_dir=logdir + repetition_dir, write_images=True, update_freq='batch',
+        tbc = TensorBoard(log_dir=os.path.join(logdir, repetition_dir), write_images=True, update_freq='batch',
                           # record weight and gradient progress 10 times during training
                           write_grads=True,
                           histogram_freq=config['training']['epochs'] // config['training']['hist_n_times'])
 
-        # early stopping to reduce the number of epochs    df.to_csv(logdir + '/run_results.csv')
+        # early stopping to reduce the number of epochs
         early_stopping = EarlyStopping(monitor='val_mean_squared_error', mode='min', restore_best_weights=True,
                                        patience=cfg_train['patience'])
 
-        learner = models[config['pipeline']['model']](input_size=(4,),
+        learner = models[config['pipeline']['model']](input_size=(len(x[0]),),
                                                       n_hidden=n_hidden,
                                                       metrics=cfg_train['metrics'],
                                                       lr=cfg_train['lr'],
@@ -121,7 +120,7 @@ def main(args, config):
             learner.summary(print_fn=lambda x: fw.write(x + '\n'))
 
         learner.fit(x, x, batch_size=cfg_train['batch_size'], epochs=cfg_train['epochs'],
-                    callbacks=[tbc, early_stopping],
+                    callbacks=[early_stopping, tbc],
                     validation_split=cfg_train['validation_split'], shuffle=True)
 
         """ Score Function """
@@ -134,13 +133,17 @@ def main(args, config):
     # df = df.sort_values(by='features')
 
     # log the results to the log dir
-    df.to_csv(logdir + '/run_results.csv')
+    df.to_csv(os.path.join(logdir + '/run_results.csv'))
     print(df)
 
     """ Model evaluation """
-    # TODO: implement methods for final model evaluation
-    from evaluation import k_means_accuracy
-    k_means_accuracy(x, y, num_clusters=num_classes, feature_rank_values=df['average'].values, top_n=config['evaluation']['k_means_accuracy']['top_n'])
+    from evaluation import k_means_accuracy, r_squared
+    acc_scores = k_means_accuracy(x, y, num_clusters=num_classes, feature_rank_values=df['average'].values, top_n=config['evaluation']['k_means_accuracy']['top_n'])
+    print("ACC:\n", acc_scores)
+    logging.info("ACC: {}".format(acc_scores))
+    r_scores = r_squared(x, y, num_clusters=num_classes, feature_rank_values=df['average'].values, top_n=config['evaluation']['r_squared']['top_n'])
+    print("R²:\n", r_scores)
+    logging.info("R²: {}".format(r_scores))
 
 
 if __name__ == '__main__':

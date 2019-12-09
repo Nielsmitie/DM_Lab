@@ -3,7 +3,7 @@ from tensorflow.keras import losses as keras_loss
 from tensorflow.python.keras import backend as K
 from loss.loss_w import l1_minus_l2
 
-# todo test if this is really corretly implemented
+# TODO: test if this is really corretly implemented
 
 
 def losses(alpha):
