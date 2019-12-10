@@ -53,9 +53,9 @@ def parse_args():
 
 
 def main(args, config):
-    tf.executing_eagerly()
     cfg_train = config['training']
 
+    # for each python package import all functions with the name indicated in the given string
     datasets = _register(dataset, 'get_dataset')
     normalizers = _register(normalize, 'normalize')
     id_estimators = _register(id, 'get_id')
@@ -92,30 +92,37 @@ def main(args, config):
     with open(os.path.join(logdir, 'config.json'), 'w') as fw:
         json.dump(config, fw, indent=4)
 
+    # this doesn't have to be done in the loop
+    # extract the dictionary of the loss functions and feed them with the parameter alpha (lambda in the paper)
     params = loss_functions[config['pipeline']['loss']](**config['loss'][config['pipeline']['loss']])
     params.update(config['model'][config['pipeline']['model']])
 
     ranking_score = {}
     for i in range(cfg_train['repetitions']):
+        # for each repetition a new file has to be created. Or in this case a new directory for the file is created
         repetition_dir = os.path.join('rep_' + str(i) + '/')
-
+        # create the directory uf beeded
         if not os.path.exists(os.path.join(logdir, repetition_dir)):
             os.makedirs(os.path.join(logdir, repetition_dir))
         # tensorbord for logging
+        # for each iteration a new logger has to be created for the new directory
         tbc = TensorBoard(log_dir=os.path.join(logdir, repetition_dir), write_images=True, update_freq='batch',
                           # record weight and gradient progress 10 times during training
                           write_grads=True,
                           histogram_freq=config['training']['epochs'] // config['training']['hist_n_times'])
 
         # early stopping to reduce the number of epochs
-        early_stopping = EarlyStopping(monitor='val_mean_squared_error', mode='min', restore_best_weights=True,
+        # todo decide if restore_best_weights be True or False
+        early_stopping = EarlyStopping(monitor='val_mean_squared_error', mode='min', restore_best_weights=False,
                                        patience=cfg_train['patience'])
 
+        # select the learner and hand over all parameters
         learner = models[config['pipeline']['model']](input_size=(len(x[0]),),
                                                       n_hidden=n_hidden,
                                                       metrics=cfg_train['metrics'],
                                                       lr=cfg_train['lr'],
                                                       **params)
+        # save the layout and the number of parameters of the model to file
         with open(os.path.join(logdir, 'model_summary.txt'), 'w') as fw:
             learner.summary(print_fn=lambda x: fw.write(x + '\n'))
 
@@ -124,11 +131,13 @@ def main(args, config):
                     validation_split=cfg_train['validation_split'], shuffle=True)
 
         """ Score Function """
+        # for each run the results are saved to ranking score and later averaged
         ranking_score['run_' + str(i)] = scoring_functions[config['pipeline']['score']](learner, **config['score'][config['pipeline']['score']])
 
+    # convert to pandas to save the score as an .csv file
     df = pd.DataFrame.from_dict(ranking_score)
 
-    # calculate average and standard deviation
+    # calculate average and standard deviation of the score
     df[['average', 'std']] = df.apply(lambda x: (np.mean(x), np.std(x)), result_type='expand', axis=1)
     # df = df.sort_values(by='features')
 
@@ -137,11 +146,13 @@ def main(args, config):
     print(df)
 
     """ Model evaluation """
-    from evaluation import k_means_accuracy, r_squared
+    from evaluation import k_means_accuracy, r_squared, alternative_r_squared
+    # add all other evaluation functions here and log their results to somewhere persistent
     acc_scores = k_means_accuracy(x, y, num_clusters=num_classes, feature_rank_values=df['average'].values, top_n=config['evaluation']['k_means_accuracy']['top_n'])
     print("ACC:\n", acc_scores)
     logging.info("ACC: {}".format(acc_scores))
-    r_scores = r_squared(x, y, num_clusters=num_classes, feature_rank_values=df['average'].values, top_n=config['evaluation']['r_squared']['top_n'])
+    # r_scores = r_squared(x, y, num_clusters=num_classes, feature_rank_values=df['average'].values, top_n=config['evaluation']['r_squared']['top_n'])
+    r_scores = alternative_r_squared(x, y, num_clusters=num_classes, feature_rank_values=df['average'].values, top_n=config['evaluation']['r_squared']['top_n'])
     print("R²:\n", r_scores)
     logging.info("R²: {}".format(r_scores))
 
