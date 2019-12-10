@@ -11,7 +11,7 @@ def losses(alpha):
     # don't know if l1_l2 is the same as l2-l1 in the paper so reimplementing the procedure
     return {
         'activity_regularizer': None,
-        'kernel_regularizer': l1_minus_l2(1.0),
+        'kernel_regularizer': l1_minus_l2(alpha),
         'kernel_constraint': None}
 
 # based on the build in regularizers from keras
@@ -19,13 +19,23 @@ def losses(alpha):
 
 
 class L2MinusL1(regularizers.Regularizer):
+    """
+    Wrapper to save the strength of the regularization outside of the training loop.
+    """
 
     def __init__(self, alpha=1.0):
         self.alpha = K.cast_to_floatx(alpha)
 
     def __call__(self, x):
-        norm = tf.norm(x, ord=2)
-        regularization = self.alpha * norm
+        """
+        Implementation from the paper
+        :param x:
+        :return:
+        """
+        norm = tf.norm(x, ord=2, axis=1)
+        # my own implementation of the norm
+        # norm = K.sqrt(K.sum(K.square(x), axis=1))
+        regularization = self.alpha * K.sum(norm)
 
         return regularization
 
