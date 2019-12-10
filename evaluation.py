@@ -76,3 +76,23 @@ def r_squared(x, y, num_clusters, feature_rank_values, top_n=100):
         results[n] = pred
 
     return results
+
+
+def alternative_r_squared(x, y, num_clusters, feature_rank_values, top_n=100):
+
+    if not isinstance(top_n, list):
+        top_n = [top_n]
+
+    ranking = np.argsort(feature_rank_values)
+    results = {}
+    for n in top_n:
+        r_scores = []
+        for feature in range(x.shape[1]):
+            regressor = KNeighborsRegressor(n_neighbors=5, weights='uniform', algorithm='auto', p=2)
+            target = x[:, feature]
+            regressor.fit(x[:, ranking[:n]], target)
+            r_scores.append(regressor.score(x[:, ranking[:n]], target))
+        pred = np.mean(r_scores)
+        results[n] = pred
+
+    return results
