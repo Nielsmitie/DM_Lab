@@ -4,11 +4,11 @@
     "normalize": "normalizer",
     "id": "pca_estimate",
     "model": "auto_encoder",
-    "loss": "loss_w",
-    "score": "score_w"
+    "loss": "loss_s",
+    "score": "score_s"
   },
   "training": {
-    "lr": 1e-4,
+    "lr": 1e-2,
     "epochs": 500,
     "batch_size": 8,
     "metrics": ["mean_squared_error"],
@@ -32,16 +32,19 @@
       "activation_hidden": "tanh",
       "activation_output": "tanh",
       "loss": "mean_squared_error",
-      "kernel_initializer": "glorot_uniform"
+      "kernel_initializer": "glorot_normal"
     }
   },
   "loss": {
     "dummy_loss": {},
-    "loss_w": {"alpha": 1}
+    "loss_w": {"alpha": 1},
+    "loss_g": {"alpha": 1},
+    "loss_s": {"alpha": 1}
   },
   "score": {
     "dummy_score": {},
-    "score_w": {}
+    "score_w": {},
+    "score_s": {}
   },
   "evaluation": {
     "k_means_accuracy": {
