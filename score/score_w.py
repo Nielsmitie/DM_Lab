@@ -3,7 +3,7 @@ import numpy as np
 
 def score(model):
     # get the first layer
-    layer = model.get_layer(index=1)
+    layer = model.get_layer('encoder')
     # extracts weights. Two weight matrices. First weights second bias
     weights = layer.get_weights()[0]
     # calculate the infinity norm as shown in the paper. For each input feature get the absolute maximum weight
