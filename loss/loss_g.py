@@ -14,22 +14,31 @@ def losses(alpha):
 # based on the build in regularizers from keras
 # https://github.com/keras-team/keras/blob/master/keras/regularizers.py
 
-'''
-def g_closure(intermediate_layer_model, loss):
-    intermediate_output = intermediate_layer_model.predict(data)
-    gradient = K.gradients(loss, intermediate_output.output)
-'''
-
 
 def loss_wrapper(alpha):
+    """
+    First layer to save alpha for the session
+    :param alpha: float value. Strength of regularization
+    :return:
+    """
     def g_closure(intermediate_layer_model, loss_func):
+        """
+        Second layer. Wrapper around loss function, because loss can take only two arguments.
+        :param intermediate_layer_model: Pointer to
+        :param loss_func:
+        :return:
+        """
         loss_func = keras_loss.get(loss_func)
 
         def loss_g(y_true, y_pred):
             loss = loss_func(y_true, y_pred)
-
+            # encoder_output = intermediate_layer_model.output
+            # encoder_gradient = K.gradients(loss, [encoder_output])[0]
+            # paper: gradients of the encoder w.r.t an initial variable
             gradients = K.gradients(loss, intermediate_layer_model.inputs)
 
-            loss += alpha * K.sum(tf.norm(gradients, ord=2))
+            loss += alpha * K.sum(tf.norm(gradients[0], ord=2))
+
+            return loss
         return loss_g
     return g_closure
