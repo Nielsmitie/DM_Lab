@@ -2,9 +2,10 @@ import math
 
 from sklearn import metrics
 
-def estimate_ids(dataset):
+
+def get_id(dataset):
     # calculate pairwise distance
-    distances = metrics.pairwise_distances(dataset, Y=None, metrics="string", n_jobs=None)
+    distances = metrics.pairwise_distances(dataset, Y=None, metric="euclidean", n_jobs=None)
 
     # two shortest distances for each point r1, r2
     shortest_distances = []
