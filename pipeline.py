@@ -48,7 +48,7 @@ def parse_args():
     args = ArgumentParser()
     args.add_argument('--debug', action='store_true')
     args.add_argument('--cpu', action='store_true', help='train on CPU')
-    args.add_argument('--config', type=str, default='configs/test_config.json')
+    args.add_argument('--config', type=str, default=os.path.join('configs', 'test_config.json'))
     return args.parse_args()
 
 
@@ -81,7 +81,7 @@ def main(args, config):
     # specify log directory
     l = [config['pipeline']['model'], config['pipeline']['dataset'], datetime.now().strftime('%Y%m%d-%H%M%S')] + list(config['dataset'][config['pipeline']['dataset']].values())
     log_prefix = '_'.join(l)
-    logdir = os.path.join('logs/', log_prefix)
+    logdir = os.path.join('logs', log_prefix)
     logging.info(logdir)
 
     # write model summary to file
@@ -100,7 +100,7 @@ def main(args, config):
     ranking_score = {}
     for i in range(cfg_train['repetitions']):
         # for each repetition a new file has to be created. Or in this case a new directory for the file is created
-        repetition_dir = os.path.join('rep_' + str(i) + '/')
+        repetition_dir = os.path.join('rep_' + str(i))
         # create the directory uf beeded
         if not os.path.exists(os.path.join(logdir, repetition_dir)):
             os.makedirs(os.path.join(logdir, repetition_dir))
@@ -142,18 +142,15 @@ def main(args, config):
     # df = df.sort_values(by='features')
 
     # log the results to the log dir
-    df.to_csv(os.path.join(logdir + '/run_results.csv'))
+    df.to_csv(os.path.join(logdir, 'run_results.csv'))
     print(df)
 
     """ Model evaluation """
     from evaluation import k_means_accuracy, r_squared, alternative_r_squared
     # add all other evaluation functions here and log their results to somewhere persistent
     acc_scores = k_means_accuracy(x, y, num_clusters=num_classes, feature_rank_values=df['average'].values, top_n=config['evaluation']['k_means_accuracy']['top_n'])
-    print("ACC:\n", acc_scores)
     logging.info("ACC: {}".format(acc_scores))
-    # r_scores = r_squared(x, y, num_clusters=num_classes, feature_rank_values=df['average'].values, top_n=config['evaluation']['r_squared']['top_n'])
-    r_scores = alternative_r_squared(x, y, num_clusters=num_classes, feature_rank_values=df['average'].values, top_n=config['evaluation']['r_squared']['top_n'])
-    print("R²:\n", r_scores)
+    r_scores = r_squared(x, y, num_clusters=num_classes, feature_rank_values=df['average'].values, top_n=config['evaluation']['r_squared']['top_n'])
     logging.info("R²: {}".format(r_scores))
 
 
