@@ -146,7 +146,7 @@ def main(args, config):
     print(df)
 
     """ Model evaluation """
-    from evaluation import k_means_accuracy, r_squared, alternative_r_squared
+    from evaluation import k_means_accuracy, r_squared
     # add all other evaluation functions here and log their results to somewhere persistent
     acc_scores = k_means_accuracy(x, y, num_clusters=num_classes, feature_rank_values=df['average'].values, top_n=config['evaluation']['k_means_accuracy']['top_n'])
     logging.info("ACC: {}".format(acc_scores))
