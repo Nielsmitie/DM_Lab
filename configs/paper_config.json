@@ -25,7 +25,8 @@
     "normalizer": {}
   },
   "id": {
-    "id_estimation": {"n_components":  0.99}
+    "pca_estimate": {"n_components":  0.99},
+    "id_estimation": {}
   },
   "model": {
     "auto_encoder": {
