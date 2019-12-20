@@ -15,7 +15,7 @@ pip install --user pipenv
 ```
 
 ### Install dependencies
-```shell script
+```markdown
 # use --skip-lock because one dependency of tensorflow is currently broken
 # installs all packages listed in Pipefile with its dependencies
 pipenv install --skip-lock
@@ -27,7 +27,7 @@ pipenv install [packages sepearated by space] --skip-lock
 ### Use pipenv
 1. Run the installation command which creates a virtual env file somewhere.
 2. Run a script
-```shell script
+```markdown
 # replace file with pipeline
 pipenv run python -m [file]
 
