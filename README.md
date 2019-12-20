@@ -1,4 +1,3 @@
-# DM_Lab
 The goal of this project is to replicate and extend the results obtained by the [Agnostic Feature Selection](https://www.ecmlpkdd2019.org/downloads/paper/744.pdf) paper.
 
 ## Installation
