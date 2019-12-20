@@ -49,3 +49,13 @@ On the top there should a Pipenv project interpreter.
 If not click on the gear and add. Choose a virtual environment and then add an existing one. Find the
 folder with the pipenv (on linux ~/.local/share/virtualenvs/DM_Lab[hash]/bin/python37) and select the
 interpreter than close the window and wait for the scan to happen.
+
+
+### Run an experiment
+
+If you are using PyCharm then add `--config path/to/config` to the run configurations.
+
+Otherwise use:
+```markdown
+pipenv run python -m pipeline --config path/to/config
+```

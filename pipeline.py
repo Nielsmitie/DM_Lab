@@ -45,6 +45,13 @@ def _register(module, func_name):
 
 
 def parse_args():
+    """
+    Method that specifies on a script level the parameters.
+
+    When running the script use pipenv run python -m pipeline --config path/to/config
+
+    :return:
+    """
     args = ArgumentParser()
     args.add_argument('--debug', action='store_true')
     args.add_argument('--cpu', action='store_true', help='train on CPU')
