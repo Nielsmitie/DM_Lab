@@ -3,7 +3,7 @@ The goal of this project is to replicate and extend the results obtained by the 
 
 ## Installation
 ### Install pipenv
-```shell script
+```markdown
 # for linux adds pipenv to the path
 sudo -H pip install -U pipenv
 
