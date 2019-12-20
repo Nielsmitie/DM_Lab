@@ -64,6 +64,10 @@ def main(args, config):
     scoring_functions = _register(score, 'score')
 
     """ Dataset loading """
+    logging.basicConfig(filename='logs/test.txt', level=logging.DEBUG)
+    logging.debug("Debug test")
+    logging.info("Info test")
+    logging.warning("Warning test")
     x, y, num_classes = datasets[config['pipeline']['dataset']](**config['dataset'][config['pipeline']['dataset']])
 
     """ Normalize """
@@ -72,8 +76,9 @@ def main(args, config):
     x = normalizers[config['pipeline']['normalize']](x, **config['normalize'][config['pipeline']['normalize']])
 
     """ ID estimation """
+    print("test")
     n_hidden = id_estimators[config['pipeline']['id']](x, **config['id'][config['pipeline']['id']])
-
+    print(n_hidden)
     """ Auto-Encoder Model """
     
     """ Loss function and Compile """

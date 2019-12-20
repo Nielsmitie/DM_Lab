@@ -2,7 +2,7 @@
   "pipeline": {
     "dataset": "mat_loader",
     "normalize": "normalizer",
-    "id": "pca_estimate",
+    "id": "id_estimation",
     "model": "auto_encoder",
     "loss": "loss_s",
     "score": "score_s"
@@ -25,7 +25,7 @@
     "normalizer": {}
   },
   "id": {
-    "pca_estimate": {"n_components":  0.99}
+    "id_estimation": {"n_components":  0.99}
   },
   "model": {
     "auto_encoder": {
