@@ -2,18 +2,18 @@
   "pipeline": {
     "dataset": "mat_loader",
     "normalize": "normalizer",
-    "id": "id_estimation",
+    "id": "hardcode",
     "model": "auto_encoder",
     "loss": "loss_s",
     "score": "score_s"
   },
   "training": {
     "lr": 1e-2,
-    "epochs": 10,
+    "epochs": 1000,
     "batch_size": 8,
     "metrics": ["mean_squared_error"],
     "validation_split": 0.1,
-    "repetitions": 1,
+    "repetitions": 3,
     "patience": 50,
     "hist_n_times": 10
   },
@@ -26,7 +26,8 @@
   },
   "id": {
     "pca_estimate": {"n_components":  0.99},
-    "id_estimation": {}
+    "id_estimation": {},
+    "hardcode": {"id":  40}
   },
   "model": {
     "auto_encoder": {
