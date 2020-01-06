@@ -18,6 +18,7 @@ import id
 import model
 import loss
 import score
+
 """
 This document contains the execution of all necessary commands to run the agnos algorithm and its competitors.
 
@@ -57,7 +58,7 @@ def parse_args():
     args = ArgumentParser()
     args.add_argument('--debug', action='store_true')
     args.add_argument('--cpu', action='store_true', help='train on CPU')
-    args.add_argument('--config', type=str, default=os.path.join('configs', 'test_config.json'))
+    args.add_argument('--config', type=str, default=os.path.join('configs', 'ndfs_config.json'))
     return args.parse_args()
 
 
@@ -86,17 +87,29 @@ def main(args, config):
 
     """ Auto-Encoder Model """
 
-
     """ Competitors """
-    if(config['pipeline']['model'] in competitors):
+
+    if config['pipeline']['model'] in competitors:
         print('Competitor-Method:', config['pipeline']['model'])
-        print(models['competitors'](method=config['pipeline']['model'], X=x, n_selected_features=config['pipeline']['selected_features'], n_clusters=config['pipeline']['clusters']))
+        mr = models['competitors'](method=config['pipeline']['model'], X=x,
+                                   n_selected_features=config['pipeline']['selected_features'],
+                                   n_clusters=num_classes)
+        print(mr)
+        print(mr.shape)
+        from evaluation import k_means_accuracy, r_squared
+        acc_scores = k_means_accuracy(x, y, num_clusters=num_classes, feature_rank_values=mr,
+                                      top_n=config['evaluation']['k_means_accuracy']['top_n'])
+        logging.info("ACC: {}".format(acc_scores))
+        r_scores = r_squared(x, y, num_clusters=num_classes, feature_rank_values=mr,
+                             top_n=config['evaluation']['r_squared']['top_n'])
+        logging.info("R²: {}".format(r_scores))
         sys.exit(0)
 
     """ Loss function and Compile """
 
     # specify log directory
-    l = [config['pipeline']['model'], config['pipeline']['dataset'], datetime.now().strftime('%Y%m%d-%H%M%S')] + list(config['dataset'][config['pipeline']['dataset']].values())
+    l = [config['pipeline']['model'], config['pipeline']['dataset'], datetime.now().strftime('%Y%m%d-%H%M%S')] + list(
+        config['dataset'][config['pipeline']['dataset']].values())
     log_prefix = '_'.join(l)
     logdir = os.path.join('logs', log_prefix)
     logging.info(logdir)
@@ -149,7 +162,8 @@ def main(args, config):
 
         """ Score Function """
         # for each run the results are saved to ranking score and later averaged
-        ranking_score['run_' + str(i)] = scoring_functions[config['pipeline']['score']](learner, **config['score'][config['pipeline']['score']])
+        ranking_score['run_' + str(i)] = scoring_functions[config['pipeline']['score']](learner, **config['score'][
+            config['pipeline']['score']])
 
     # convert to pandas to save the score as an .csv file
     df = pd.DataFrame.from_dict(ranking_score)
@@ -165,9 +179,11 @@ def main(args, config):
     """ Model evaluation """
     from evaluation import k_means_accuracy, r_squared
     # add all other evaluation functions here and log their results to somewhere persistent
-    acc_scores = k_means_accuracy(x, y, num_clusters=num_classes, feature_rank_values=df['average'].values, top_n=config['evaluation']['k_means_accuracy']['top_n'])
+    acc_scores = k_means_accuracy(x, y, num_clusters=num_classes, feature_rank_values=df['average'].values,
+                                  top_n=config['evaluation']['k_means_accuracy']['top_n'])
     logging.info("ACC: {}".format(acc_scores))
-    r_scores = r_squared(x, y, num_clusters=num_classes, feature_rank_values=df['average'].values, top_n=config['evaluation']['r_squared']['top_n'])
+    r_scores = r_squared(x, y, num_clusters=num_classes, feature_rank_values=df['average'].values,
+                         top_n=config['evaluation']['r_squared']['top_n'])
     logging.info("R²: {}".format(r_scores))
 
 

@@ -6,7 +6,6 @@
     "model": "LAP",
     "loss": "dummy_loss",
     "score": "score_w",
-    "clusters": 5,
     "selected_features": 20
   },
   "training": {
@@ -48,6 +47,9 @@
   },
   "evaluation": {
     "k_means_accuracy": {
+      "top_n": [3]
+    },
+    "r_squared": {
       "top_n": [3]
     }
   }
