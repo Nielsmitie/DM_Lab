@@ -1,9 +1,11 @@
 import sys
+import logging
 from skfeature.function.similarity_based.SPEC import spec
 from skfeature.function.similarity_based.lap_score import lap_score
 from skfeature.function.sparse_learning_based.MCFS import mcfs
 from skfeature.function.sparse_learning_based.NDFS import ndfs
 from skfeature.utility import construct_W
+from skfeature.utility.sparse_learning import feature_ranking
 
 """
 Input
@@ -60,11 +62,11 @@ def competitor(method, X, metric='cosine', weightMode='binary', k=5, t=0, style=
     elif method == "LAP":
         return lap_score(X, W=W)
     elif method == "MCFS":
-        return mcfs(X, n_selected_features, W=W, n_clusters=n_clusters)
+        return feature_ranking(mcfs(X, n_selected_features, W=W, n_clusters=n_clusters))
     elif method == "NDFS":
-        return ndfs(X, W=W, n_clusters=n_clusters)
+        return feature_ranking(ndfs(X, W=W, n_clusters=n_clusters))
     else:
-        print("Method not known!", file=sys.stderr)
+        logging.error("Method not known!")
 
 
 def get_model(*args, **kwargs):

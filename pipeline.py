@@ -193,8 +193,8 @@ def evaluation(config, x, y, num_classes, feature_rank_values):
     r_scores = r_squared(x, y, num_clusters=num_classes, feature_rank_values=feature_rank_values,
                          top_n=config['evaluation']['r_squared']['top_n'])
     logging.info("R²: {}".format(r_scores))
-
-    save_result(config, {'acc': [str(acc_scores)], 'r_square': [str(r_scores)]})
+    # TODO: Fix!
+    #save_result(config, {'acc': [str(acc_scores)], 'r_square': [str(r_scores)]})
 
 
 if __name__ == '__main__':
