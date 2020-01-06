@@ -6,6 +6,8 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 
+import sys as sys
+
 import tensorflow as tf
 from tensorflow.keras.callbacks import TensorBoard, EarlyStopping
 
@@ -48,7 +50,7 @@ def parse_args():
     args = ArgumentParser()
     args.add_argument('--debug', action='store_true')
     args.add_argument('--cpu', action='store_true', help='train on CPU')
-    args.add_argument('--config', type=str, default=os.path.join('configs', 'test_config.json'))
+    args.add_argument('--config', type=str, default=os.path.join('configs', 'paper_config.json'))
     return args.parse_args()
 
 
@@ -80,7 +82,11 @@ def main(args, config):
     n_hidden = id_estimators[config['pipeline']['id']](x, **config['id'][config['pipeline']['id']])
     print(n_hidden)
     """ Auto-Encoder Model """
-    
+
+    """ Competitors """
+    if(True):
+        sys.exit
+
     """ Loss function and Compile """
 
     # specify log directory
