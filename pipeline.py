@@ -96,13 +96,8 @@ def main(args, config):
                                    n_clusters=num_classes)
         print(mr)
         print(mr.shape)
-        from evaluation import k_means_accuracy, r_squared
-        acc_scores = k_means_accuracy(x, y, num_clusters=num_classes, feature_rank_values=mr,
-                                      top_n=config['evaluation']['k_means_accuracy']['top_n'])
-        logging.info("ACC: {}".format(acc_scores))
-        r_scores = r_squared(x, y, num_clusters=num_classes, feature_rank_values=mr,
-                             top_n=config['evaluation']['r_squared']['top_n'])
-        logging.info("R²: {}".format(r_scores))
+
+        evaluation(config, x, y, num_classes, mr)
         sys.exit(0)
 
     """ Loss function and Compile """
@@ -178,15 +173,19 @@ def main(args, config):
 
     """ Model evaluation """
 
+    evaluation(config, x, y, num_classes, df['average'].values)
+
+
+def evaluation(config, x, y, num_classes, feature_rank_values):
     # global .csv that saves the results of all runs and makes them comparable
     from result_logger import save_result
 
     from evaluation import k_means_accuracy, r_squared
     # add all other evaluation functions here and log their results to somewhere persistent
-    acc_scores = k_means_accuracy(x, y, num_clusters=num_classes, feature_rank_values=df['average'].values,
+    acc_scores = k_means_accuracy(x, y, num_clusters=num_classes, feature_rank_values=feature_rank_values,
                                   top_n=config['evaluation']['k_means_accuracy']['top_n'])
     logging.info("ACC: {}".format(acc_scores))
-    r_scores = r_squared(x, y, num_clusters=num_classes, feature_rank_values=df['average'].values,
+    r_scores = r_squared(x, y, num_clusters=num_classes, feature_rank_values=feature_rank_values,
                          top_n=config['evaluation']['r_squared']['top_n'])
     logging.info("R²: {}".format(r_scores))
 
