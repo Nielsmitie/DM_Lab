@@ -2,7 +2,7 @@ The goal of this project is to replicate and extend the results obtained by the 
 
 ## Installation
 ### Install pipenv
-```shell script
+```markdown
 # for linux adds pipenv to the path
 sudo -H pip install -U pipenv
 
@@ -14,7 +14,7 @@ pip install --user pipenv
 ```
 
 ### Install dependencies
-```shell script
+```markdown
 # use --skip-lock because one dependency of tensorflow is currently broken
 # installs all packages listed in Pipefile with its dependencies
 pipenv install --skip-lock
@@ -26,7 +26,8 @@ pipenv install [packages sepearated by space] --skip-lock
 ### Use pipenv
 1. Run the installation command which creates a virtual env file somewhere.
 2. Run a script
-```shell script
+
+```markdown
 # replace file with pipeline
 pipenv run python -m [file]
 
@@ -47,3 +48,13 @@ On the top there should a Pipenv project interpreter.
 If not click on the gear and add. Choose a virtual environment and then add an existing one. Find the
 folder with the pipenv (on linux ~/.local/share/virtualenvs/DM_Lab[hash]/bin/python37) and select the
 interpreter than close the window and wait for the scan to happen.
+
+
+### Run an experiment
+
+If you are using PyCharm then add `--config path/to/config` to the run configurations.
+
+Otherwise use:
+```markdown
+pipenv run python -m pipeline --config path/to/config
+```

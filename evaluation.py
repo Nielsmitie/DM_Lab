@@ -1,34 +1,79 @@
-from sklearn.cluster import KMeans
 import numpy as np
-from sklearn import metrics
-# todo k-means clustering accuracy
+from skfeature.utility.unsupervised_evaluation import evaluation
+from sklearn.neighbors import KNeighborsRegressor
 
 
+# TODO: Validate
 def k_means_accuracy(x, y, num_clusters, feature_rank_values, top_n=100):
-    # todo is this the "accuracy" used in the papaer
-    # https://stackoverflow.com/questions/34047540/python-clustering-purity-metric
-    def purity_score(y_true, y_pred):
-        # compute contingency matrix (also called confusion matrix)
-        contingency_matrix = metrics.cluster.contingency_matrix(y_true, y_pred)
-        # return purity
-        return np.sum(np.amax(contingency_matrix, axis=0)) / np.sum(contingency_matrix)
+    """
+    This function calculates ACC.
 
-    kmeans = KMeans(n_clusters=num_clusters, n_jobs=-1)
+    Input
+    -----
+    x: {numpy array}, shape (n_samples, n_selected_features)
+            input data on the selected features
+    num_clusters: {int}
+            number of clusters
+    y: {numpy array}, shape (n_samples,)
+            true labels
+    feature_rank_values: {list}
+            scores of the features
+    top_n: {int or list}
+            top n features to be selected
 
+    Output
+    ------
+    results: {dict}
+        Dictionary containing the ACC for every given top_n
+    """
     if not isinstance(top_n, list):
         top_n = [top_n]
 
-    # sort the values
     ranking = np.argsort(feature_rank_values)
-
     results = {}
     for n in top_n:
-        # take the top_n for training
-        pred = kmeans.fit_predict(x[:, ranking[:n]], y)
-
-        results[n] = purity_score(y, pred)
-        print('Purity score: ' + str(results[n]))
+        _, acc = evaluation(x[:, ranking[:n]], num_clusters, y)
+        results[n] = acc
 
     return results
 
 
+# TODO: Validate
+def r_squared(x, y, num_clusters, feature_rank_values, top_n=100):
+    """
+    This function calculates R².
+
+    Input
+    -----
+    x: {numpy array}, shape (n_samples, n_selected_features)
+            input data on the selected features
+    num_clusters: {int}
+            number of clusters
+    y: {numpy array}, shape (n_samples,)
+            true labels
+    feature_rank_values: {list}
+            scores of the features
+    top_n: {int or list}
+            top n features to be selected
+
+    Output
+    ------
+    results: {dict}
+        Dictionary containing the R² for every given top_n
+    """
+    if not isinstance(top_n, list):
+        top_n = [top_n]
+
+    ranking = np.argsort(feature_rank_values)
+    results = {}
+    for n in top_n:
+        r_scores = []
+        for feature in range(x.shape[1]):
+            regressor = KNeighborsRegressor(n_neighbors=5, weights='uniform', algorithm='auto', p=2)
+            target = x[:, feature]
+            regressor.fit(x[:, ranking[:n]], target)
+            r_scores.append(regressor.score(x[:, ranking[:n]], target))
+        pred = np.mean(r_scores)
+        results[n] = pred
+
+    return results

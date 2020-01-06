@@ -18,4 +18,3 @@ print("Laplacian: ", get_model("LAP", X))
 print("MCFS", get_model("MCFS", X))
 print("NDFS", get_model("NDFS", X))
 print("SPEC: ", get_model(method='SPEC', X=X))
-
