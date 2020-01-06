@@ -120,7 +120,7 @@ def main(args, config):
 
         # early stopping to reduce the number of epochs
         # todo decide if restore_best_weights be True or False
-        early_stopping = EarlyStopping(monitor='val_mean_squared_error', mode='min', restore_best_weights=False,
+        early_stopping = EarlyStopping(monitor='val_mean_squared_error', mode='min', restore_best_weights=True,
                                        patience=cfg_train['patience'])
 
         # select the learner and hand over all parameters
@@ -153,12 +153,18 @@ def main(args, config):
     print(df)
 
     """ Model evaluation """
+
+    # global .csv that saves the results of all runs and makes them comparable
+    from result_logger import save_result
+
     from evaluation import k_means_accuracy, r_squared
     # add all other evaluation functions here and log their results to somewhere persistent
     acc_scores = k_means_accuracy(x, y, num_clusters=num_classes, feature_rank_values=df['average'].values, top_n=config['evaluation']['k_means_accuracy']['top_n'])
     logging.info("ACC: {}".format(acc_scores))
     r_scores = r_squared(x, y, num_clusters=num_classes, feature_rank_values=df['average'].values, top_n=config['evaluation']['r_squared']['top_n'])
     logging.info("R²: {}".format(r_scores))
+
+    save_result(config, {'acc': [str(acc_scores)], 'r_square': [str(r_scores)]})
 
 
 if __name__ == '__main__':
