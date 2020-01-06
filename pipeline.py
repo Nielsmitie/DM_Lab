@@ -6,6 +6,8 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 
+import sys as  sys
+
 import tensorflow as tf
 from tensorflow.keras.callbacks import TensorBoard, EarlyStopping
 
@@ -62,6 +64,7 @@ def main(args, config):
     models = _register(model, 'get_model')
     loss_functions = _register(loss, 'losses')
     scoring_functions = _register(score, 'score')
+    competitors = ['SPEC', 'LAP', 'MCFS', 'NDFS']
 
     """ Dataset loading """
     x, y, num_classes = datasets[config['pipeline']['dataset']](**config['dataset'][config['pipeline']['dataset']])
@@ -75,7 +78,14 @@ def main(args, config):
     n_hidden = id_estimators[config['pipeline']['id']](x, **config['id'][config['pipeline']['id']])
 
     """ Auto-Encoder Model """
-    
+
+
+    """ Competitors """
+    if(config['pipeline']['model'] in competitors):
+        print('Competitor-Method:', config['pipeline']['model'])
+        print(models['competitors'](method=config['pipeline']['model'], X=x, n_selected_features=config['pipeline']['selected_features'], n_clusters=config['pipeline']['clusters']))
+        sys.exit(0)
+
     """ Loss function and Compile """
 
     # specify log directory

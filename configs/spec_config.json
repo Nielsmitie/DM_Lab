@@ -1,0 +1,54 @@
+{
+  "pipeline": {
+    "dataset": "iris_loader",
+    "normalize": "normalizer",
+    "id": "pca_estimate",
+    "model": "SPEC",
+    "loss": "dummy_loss",
+    "score": "score_w",
+    "clusters": 5,
+    "selected_features": 20
+  },
+  "training": {
+    "lr": 1e-4,
+    "epochs": 10,
+    "batch_size": 32,
+    "metrics": ["mean_squared_error"],
+    "validation_split": 0.1,
+    "repetitions": 10,
+    "patience": 50,
+    "hist_n_times": 10
+  },
+  "dataset": {
+    "dummy_data": {"dataset_path":  ""},
+    "iris_loader": {}
+  },
+  "normalize": {
+    "dummy_normalization": {},
+    "normalizer": {}
+  },
+  "id": {
+    "dummy_id": {},
+    "pca_estimate": {"n_components":  0.99}
+  },
+  "model": {
+    "auto_encoder": {
+      "activation_hidden": "tanh",
+      "activation_output": "tanh",
+      "loss": "mean_squared_error",
+      "kernel_initializer": "glorot_uniform"
+    }
+  },
+  "loss": {
+    "dummy_loss": {}
+  },
+  "score": {
+    "dummy_score": {},
+    "score_w": {}
+  },
+  "evaluation": {
+    "k_means_accuracy": {
+      "top_n": [3]
+    }
+  }
+}

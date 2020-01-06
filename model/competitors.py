@@ -67,5 +67,5 @@ def competitor(method, X, metric='cosine', weightMode='binary', k=5, t=0, style=
         print("Method not known!", file=sys.stderr)
 
 
-def get_competitor(*args, **kwargs):
+def get_model(*args, **kwargs):
     return competitor(*args, **kwargs)
