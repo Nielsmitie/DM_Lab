@@ -97,7 +97,7 @@ def main(args, config):
     if config['pipeline']['model'] in competitors:
         print('Competitor-Method:', config['pipeline']['model'])
         mr = models['competitors'](method=config['pipeline']['model'], X=x,
-                                   n_selected_features=config['pipeline']['selected_features'],
+                                   n_selected_features=config['model'][config['pipeline']['model']]['selected_features'],
                                    n_clusters=num_classes)
         print(mr)
         print(mr.shape)

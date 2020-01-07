@@ -5,8 +5,7 @@
     "id": "pca_estimate",
     "model": "LAP",
     "loss": "dummy_loss",
-    "score": "score_w",
-    "selected_features": 20
+    "score": "score_w"
   },
   "training": {
     "lr": 1e-4,
@@ -36,7 +35,8 @@
       "activation_output": "tanh",
       "loss": "mean_squared_error",
       "kernel_initializer": "glorot_uniform"
-    }
+    },
+    "LAP": {"selected_features":  20}
   },
   "loss": {
     "dummy_loss": {}
@@ -47,10 +47,10 @@
   },
   "evaluation": {
     "k_means_accuracy": {
-      "top_n": [3]
+      "top_n": [100]
     },
     "r_squared": {
-      "top_n": [3]
+      "top_n": [100]
     }
   }
 }
