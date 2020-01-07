@@ -17,7 +17,7 @@ def save_result(config, results, path_to_result_file='logs/results.csv'):
     results = pd.concat([one_liner, results], axis=1)
     # if log dir does not exist
     if not os.path.isdir('logs'):
-        os.mkdir('logs/')
+        os.mkdir('logs')
     # if file does not exist create
     if not os.path.isfile(path_to_result_file):
         df = results
