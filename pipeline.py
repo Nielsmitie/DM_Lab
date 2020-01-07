@@ -98,6 +98,9 @@ def main(args, config):
     logdir = os.path.join('logs', log_prefix)
     logging.info(logdir)
 
+    if not os.path.isdir(logdir):
+        os.makedirs(logdir)
+
     """ Competitors """
 
     if config['pipeline']['model'] in competitors:
