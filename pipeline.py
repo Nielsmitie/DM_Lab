@@ -74,11 +74,7 @@ def main(args, config):
     scoring_functions = _register(score, 'score')
     competitors = ['SPEC', 'LAP', 'MCFS', 'NDFS']
 
-    """ Dataset loading """
-    logging.basicConfig(filename='logs/test.txt', level=logging.DEBUG)
-    logging.debug("Debug test")
-    logging.info("Info test")
-    logging.warning("Warning test")
+    """ Competitors """
     x, y, num_classes = datasets[config['pipeline']['dataset']](**config['dataset'][config['pipeline']['dataset']])
 
     """ Normalize """
@@ -101,7 +97,11 @@ def main(args, config):
     if not os.path.isdir(logdir):
         os.makedirs(logdir)
 
-    """ Competitors """
+    """ Dataset loading """
+    logging.basicConfig(filename='logs/test.txt', level=logging.DEBUG)
+    logging.debug("Debug test")
+    logging.info("Info test")
+    logging.warning("Warning test")
 
     if config['pipeline']['model'] in competitors:
         print('Competitor-Method:', config['pipeline']['model'])
@@ -142,8 +142,11 @@ def main(args, config):
 
         # early stopping to reduce the number of epochs
         # todo decide if restore_best_weights be True or False
-        early_stopping = EarlyStopping(monitor='val_mean_squared_error', mode='min', restore_best_weights=True,
-                                       patience=cfg_train['patience'])
+        callbacks = [tbc]
+        if cfg_train['patience'] != 0:
+            early_stopping = EarlyStopping(monitor='val_mean_squared_error', mode='min', restore_best_weights=True,
+                                           patience=cfg_train['patience'])
+            callbacks.append(early_stopping)
 
         # select the learner and hand over all parameters
         learner = models[config['pipeline']['model']](input_size=(len(x[0]),),
@@ -156,7 +159,7 @@ def main(args, config):
             learner.summary(print_fn=lambda x: fw.write(x + '\n'))
 
         learner.fit(x, x, batch_size=cfg_train['batch_size'], epochs=cfg_train['epochs'],
-                    callbacks=[early_stopping, tbc],
+                    callbacks=callbacks,
                     validation_split=cfg_train['validation_split'], shuffle=True)
 
         """ Score Function """
