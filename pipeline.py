@@ -90,7 +90,13 @@ def main(args, config):
     print("test")
     n_hidden = id_estimators[config['pipeline']['id']](x, **config['id'][config['pipeline']['id']])
     print(n_hidden)
-    """ Auto-Encoder Model """
+
+    # specify log directory
+    l = [config['pipeline']['model'], config['pipeline']['dataset'], datetime.now().strftime('%Y%m%d-%H%M%S')] + list(
+        config['dataset'][config['pipeline']['dataset']].values())
+    log_prefix = '_'.join(l)
+    logdir = os.path.join('logs', log_prefix)
+    logging.info(logdir)
 
     """ Competitors """
 
@@ -102,25 +108,15 @@ def main(args, config):
         print(mr)
         print(mr.shape)
 
-        evaluation(config, x, y, num_classes, mr)
+        evaluation(config, x, y, num_classes, mr, logdir=logdir)
         sys.exit(0)
 
+    """ Auto-Encoder Model """
     """ Loss function and Compile """
-
-    # specify log directory
-    l = [config['pipeline']['model'], config['pipeline']['dataset'], datetime.now().strftime('%Y%m%d-%H%M%S')] + list(
-        config['dataset'][config['pipeline']['dataset']].values())
-    log_prefix = '_'.join(l)
-    logdir = os.path.join('logs', log_prefix)
-    logging.info(logdir)
 
     # write model summary to file
     if not os.path.exists(logdir):
         os.makedirs(logdir)
-
-    # write config file to log directory
-    with open(os.path.join(logdir, 'config.json'), 'w') as fw:
-        json.dump(config, fw, indent=4)
 
     # this doesn't have to be done in the loop
     # extract the dictionary of the loss functions and feed them with the parameter alpha (lambda in the paper)
@@ -178,10 +174,14 @@ def main(args, config):
 
     """ Model evaluation """
 
-    evaluation(config, x, y, num_classes, df['average'].values)
+    evaluation(config, x, y, num_classes, df['average'].values, logdir=logdir)
 
 
-def evaluation(config, x, y, num_classes, feature_rank_values):
+def evaluation(config, x, y, num_classes, feature_rank_values, logdir):
+    # write config file to log directory
+    with open(os.path.join(logdir, 'config.json'), 'w') as fw:
+        json.dump(config, fw, indent=4)
+
     # global .csv that saves the results of all runs and makes them comparable
     from result_logger import save_result
 
