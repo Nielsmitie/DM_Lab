@@ -3,7 +3,6 @@ from skfeature.utility.unsupervised_evaluation import evaluation
 from sklearn.neighbors import KNeighborsRegressor
 
 
-# TODO: Validate
 def k_means_accuracy(x, y, num_clusters, feature_rank_values, top_n=100):
     """
     This function calculates ACC.
@@ -38,7 +37,6 @@ def k_means_accuracy(x, y, num_clusters, feature_rank_values, top_n=100):
     return results
 
 
-# TODO: Validate
 def r_squared(x, y, num_clusters, feature_rank_values, top_n=100):
     """
     This function calculates R².

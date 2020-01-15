@@ -1,11 +1,11 @@
 {
   "pipeline": {
-    "dataset": "iris_loader",
+    "dataset": "mat_loader",
     "normalize": "normalizer",
-    "id": "pca_estimate",
+    "id": "hardcode",
     "model": "MCFS",
     "loss": "dummy_loss",
-    "score": "score_w"
+    "score": "dummy_score"
   },
   "training": {
     "lr": 1e-4,
@@ -18,16 +18,17 @@
     "hist_n_times": 10
   },
   "dataset": {
-    "dummy_data": {"dataset_path":  ""},
+    "mat_loader": {"name": "arcene"},
     "iris_loader": {}
   },
   "normalize": {
-    "dummy_normalization": {},
+    "identity": {},
     "normalizer": {}
   },
   "id": {
-    "dummy_id": {},
-    "pca_estimate": {"n_components":  0.99}
+    "pca_estimate": {"n_components":  0.99},
+    "id_estimation": {},
+    "hardcode": {"id":  40}
   },
   "model": {
     "auto_encoder": {
@@ -43,7 +44,6 @@
   },
   "score": {
     "dummy_score": {},
-    "score_w": {}
   },
   "evaluation": {
     "k_means_accuracy": {

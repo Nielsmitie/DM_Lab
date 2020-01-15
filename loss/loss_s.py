@@ -7,7 +7,6 @@ from tensorflow.keras.constraints import MinMaxNorm
 
 
 def losses(alpha):
-    # don't know if l1_l2 is the same as l2-l1 in the paper so reimplementing the procedure
     return {
         'activity_regularizer': None,
         'kernel_regularizer': None,

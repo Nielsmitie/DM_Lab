@@ -1,4 +1,4 @@
 
+
 def losses():
-    return {
-        'kate': 'binary_crossentropy'}
+    return {'kate': 'binary_crossentropy'}

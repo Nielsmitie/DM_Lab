@@ -18,12 +18,15 @@
     "hist_n_times": 10
   },
   "dataset": {
-    "mat_loader": {"name":  "arcene"}
+    "mat_loader": {"name": "arcene"},
+    "iris_loader": {}
   },
   "normalize": {
+    "identity" : {},
     "normalizer": {}
   },
   "id": {
+    "pca_estimate": {"n_components":  0.99},
     "id_estimation": {},
     "hardcode": {"id":  40}
   },
@@ -36,10 +39,14 @@
     }
   },
   "loss": {
-    "loss_s": {"alpha": 1}
+    "loss_s": {"alpha": 1},
+    "loss_w": {"alpha": 1},
+    "loss_g": {"alpha": 1}
   },
   "score": {
-    "score_s": {}
+    "score_w": {},
+    "score_s": {},
+    "score_g": {}
   },
   "evaluation": {
     "k_means_accuracy": {

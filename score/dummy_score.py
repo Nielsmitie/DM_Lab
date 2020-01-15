@@ -1,4 +1,4 @@
 
 
-def score(model):
-    return 3
+def score(model=None):
+    return 0

@@ -1,8 +1,8 @@
 {
   "pipeline": {
-    "dataset": "mat_loader",
+    "dataset": "iris_loader",
     "normalize": "normalizer",
-    "id": "hardcode",
+    "id": "pca_estimate",
     "model": "auto_encoder",
     "loss": "loss_s",
     "score": "score_s"
@@ -18,10 +18,11 @@
     "hist_n_times": 10
   },
   "dataset": {
-    "mat_loader": {"name":  "arcene"},
+    "mat_loader": {"name": "arcene"},
     "iris_loader": {}
   },
   "normalize": {
+    "identity": {},
     "normalizer": {}
   },
   "id": {
@@ -35,7 +36,11 @@
       "activation_output": "tanh",
       "loss": "mean_squared_error",
       "kernel_initializer": "glorot_normal"
-    }
+    },
+    "LAP": {"selected_features": 20},
+    "NDFS": {"selected_features": 20},
+    "MCFS": {"selected_features": 20},
+    "SPEC": {"selected_features": 20}
   },
   "loss": {
     "dummy_loss": {},
@@ -46,7 +51,8 @@
   "score": {
     "dummy_score": {},
     "score_w": {},
-    "score_s": {}
+    "score_s": {},
+    "score_g": {}
   },
   "evaluation": {
     "k_means_accuracy": {

@@ -1,13 +1,13 @@
 import tensorflow as tf
 from tensorflow.keras import Model
 from tensorflow.keras.layers import Input, Dense
-
 from tensorflow.keras.layers import Layer
 from tensorflow.keras import backend as K
 import warnings
+import logging
 
 
-def KATE(input_size, n_hidden, activation_hidden='tanh', activation_output='tanh', loss='binary_crossentropy',lr=1e-4,
+def KATE(input_size, n_hidden, activation_hidden='tanh', activation_output='tanh', loss='binary_crossentropy', lr=1e-4,
          metrics=None, comp_topk=None, kernel_initializer='glorot_normal'):
 
     if metrics is None:
@@ -74,7 +74,7 @@ class KCompetitive(Layer):
         return dict(base_config)
 
     def k_comp_tanh(self, x, topk, factor=6.26):
-        print('run k_comp_tanh')
+        logging.info('Run k_comp_tanh')
         dim = int(x.get_shape()[1])
         # batch_size = tf.to_float(tf.shape(x)[0])
         if topk > dim:
@@ -127,7 +127,7 @@ class KCompetitive(Layer):
         return res
 
     def kSparse(self, x, topk):
-        print('run regular k-sparse')
+        logging.info('Run regular k-sparse')
         dim = int(x.get_shape()[1])
         if topk > dim:
             warnings.warn('Warning: topk should not be larger than dim: %s, found: %s, using %s' % (dim, topk, dim))
@@ -185,4 +185,3 @@ class Dense_tied(Dense):
         if self.use_bias:
             output += self.bias
         return self.activation(output)
-

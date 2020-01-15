@@ -14,6 +14,8 @@ def losses(alpha):
 # based on the build in regularizers from keras
 # https://github.com/keras-team/keras/blob/master/keras/regularizers.py
 
+#aggregate = tf.reduce_sum(tf.reduce_sum(tf.square(tf.multiply(tf.expand_dims(weights['encoder'],0),(1-tf.square(tf.expand_dims(encoder,1))))),axis=1),axis=0)))
+
 
 def loss_wrapper(alpha):
     """

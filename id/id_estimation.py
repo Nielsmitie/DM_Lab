@@ -1,22 +1,15 @@
 import math
 import numpy as np
-
 from sklearn import metrics
 
 
+# TODO: Validate
 def get_id(dataset):
     # calculate pairwise distance
     distances = metrics.pairwise_distances(dataset, Y=None, metrics="euclidian", n_jobs=None)
 
     # two shortest distances for each point r1, r2
     shortest_distances = []
-    """for i in range(len(distances)):
-        shortest_distances[i][0] = distances[i][0]
-        shortest_distances[i][1] = distances[i][1]
-        for j in range(len(distances[0])):
-            if distances[i][j] < shortest_distances[i][0]:
-                shortest_distances[i][1] = shortest_distances[i][0]
-                shortest_distances[i][0] = distances[i][j]"""
     shortest_distances = np.argsort(distances, axis=0)
 
     # compute µ = r2/r1
@@ -38,5 +31,3 @@ def get_id(dataset):
         d_sum += - ((math.log(1 - f[i])) / math.log(r2r1_quotient[i]))
 
     return d_sum# / len(f)
-
-#TODO needs testing
