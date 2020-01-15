@@ -5,6 +5,7 @@ import logging
 from datetime import datetime
 import pandas as pd
 import numpy as np
+import sklearn
 
 import sys as  sys
 
@@ -32,9 +33,9 @@ The syntax of the config file is as follows:
 1. pipeline defines for each step a file that is used to run the experiment.
 2. For each step there is an additional key where all available methods are listed. In this list the params for each
     method are defined. (It is possible to only list the used steps) (This is only a separate section to define params)
-3. training: define the hyperparameter used for training
 """
 
+# TODO: Use seeding/random states at every random operation and log them to make results replicable
 
 def _register(module, func_name):
     registered = {}
@@ -58,7 +59,7 @@ def parse_args():
     args = ArgumentParser()
     args.add_argument('--debug', action='store_true')
     args.add_argument('--cpu', action='store_true', help='train on CPU')
-    args.add_argument('--config', type=str, default=os.path.join('configs', 'ndfs_config.json'))
+    args.add_argument('--config', type=str, default=os.path.join('configs', 'paper_config.json'))
     return args.parse_args()
 
 
@@ -74,53 +75,48 @@ def main(args, config):
     scoring_functions = _register(score, 'score')
     competitors = ['SPEC', 'LAP', 'MCFS', 'NDFS']
 
-    """ Competitors """
-    x, y, num_classes = datasets[config['pipeline']['dataset']](**config['dataset'][config['pipeline']['dataset']])
-
-    """ Normalize """
-    # TODO: split in train, test and fit_transform on train and transform on test.
-    #  Is unsupervised, do we even need to split?
-    x = normalizers[config['pipeline']['normalize']](x, **config['normalize'][config['pipeline']['normalize']])
-
-    """ ID estimation """
-    print("test")
-    n_hidden = id_estimators[config['pipeline']['id']](x, **config['id'][config['pipeline']['id']])
-    print(n_hidden)
-
     # specify log directory
     l = [config['pipeline']['model'], config['pipeline']['dataset'], datetime.now().strftime('%Y%m%d-%H%M%S')] + list(
         config['dataset'][config['pipeline']['dataset']].values())
     log_prefix = '_'.join(l)
     logdir = os.path.join('logs', log_prefix)
-    logging.info(logdir)
-
     if not os.path.isdir(logdir):
         os.makedirs(logdir)
+    logging.basicConfig(filename=os.path.join(logdir, "logs.log")) # TODO: Fix
+    logging.info(logdir)
 
     """ Dataset loading """
-    logging.basicConfig(filename='logs/test.txt', level=logging.DEBUG)
-    logging.debug("Debug test")
-    logging.info("Info test")
-    logging.warning("Warning test")
+    X, y, num_classes = datasets[config['pipeline']['dataset']](**config['dataset'][config['pipeline']['dataset']])
 
+    """ Normalize """
+    X = normalizers[config['pipeline']['normalize']](X, **config['normalize'][config['pipeline']['normalize']])
+    test_size = float(config['dataset']['test_split'])
+    if test_size != 0. and test_size != 1.:
+        X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y, test_size=test_size, shuffle=True)
+    else:
+        X_train = X
+        X_test = []
+        y_train = y
+        y_test = []
+
+    """ ID estimation """
+    estimated_id = id_estimators[config['pipeline']['id']](X_train, **config['id'][config['pipeline']['id']])
+
+    """ Competitors """
     if config['pipeline']['model'] in competitors:
-        print('Competitor-Method:', config['pipeline']['model'])
-        mr = models['competitors'](method=config['pipeline']['model'], X=x,
+        logging.info('Competitor-Method: {}'.format(config['pipeline']['model']))
+        mr = models['competitors'](method=config['pipeline']['model'], X=X_train,
                                    n_selected_features=config['model'][config['pipeline']['model']]['selected_features'],
                                    n_clusters=num_classes)
-        print(mr)
-        print(mr.shape)
-
-        evaluation(config, x, y, num_classes, mr, logdir=logdir)
+        """ Model evaluation """
+        if len(X_test) == 0:
+            evaluation(config, X_train, y_train, num_classes, mr, logdir=logdir)
+        else:
+            evaluation(config, X_test, y_test, num_classes, mr, logdir=logdir)
         sys.exit(0)
 
     """ Auto-Encoder Model """
     """ Loss function and Compile """
-
-    # write model summary to file
-    if not os.path.exists(logdir):
-        os.makedirs(logdir)
-
     # this doesn't have to be done in the loop
     # extract the dictionary of the loss functions and feed them with the parameter alpha (lambda in the paper)
     params = loss_functions[config['pipeline']['loss']](**config['loss'][config['pipeline']['loss']])
@@ -141,7 +137,7 @@ def main(args, config):
                           histogram_freq=config['training']['epochs'] // config['training']['hist_n_times'])
 
         # early stopping to reduce the number of epochs
-        # todo decide if restore_best_weights be True or False
+        # TODO: decide if restore_best_weights be True or False
         callbacks = [tbc]
         if cfg_train['patience'] != 0:
             early_stopping = EarlyStopping(monitor='val_mean_squared_error', mode='min', restore_best_weights=True,
@@ -149,8 +145,8 @@ def main(args, config):
             callbacks.append(early_stopping)
 
         # select the learner and hand over all parameters
-        learner = models[config['pipeline']['model']](input_size=(len(x[0]),),
-                                                      n_hidden=n_hidden,
+        learner = models[config['pipeline']['model']](input_size=(X_train.shape[1],),
+                                                      n_hidden=estimated_id,
                                                       metrics=cfg_train['metrics'],
                                                       lr=cfg_train['lr'],
                                                       **params)
@@ -158,7 +154,7 @@ def main(args, config):
         with open(os.path.join(logdir, 'model_summary.txt'), 'w') as fw:
             learner.summary(print_fn=lambda x: fw.write(x + '\n'))
 
-        learner.fit(x, x, batch_size=cfg_train['batch_size'], epochs=cfg_train['epochs'],
+        learner.fit(X_train, X_train, batch_size=cfg_train['batch_size'], epochs=cfg_train['epochs'],
                     callbacks=callbacks,
                     validation_split=cfg_train['validation_split'], shuffle=True)
 
@@ -172,18 +168,20 @@ def main(args, config):
 
     # calculate average and standard deviation of the score
     df[['average', 'std']] = df.apply(lambda x: (np.mean(x), np.std(x)), result_type='expand', axis=1)
-    # df = df.sort_values(by='features')
+    #df = df.sort_values(by='features')
 
     # log the results to the log dir
     df.to_csv(os.path.join(logdir, 'run_results.csv'))
-    print(df)
+    #print(df)
 
     """ Model evaluation """
+    if len(X_test) == 0:
+        evaluation(config, X_train, y_train, num_classes, df['average'].values, logdir=logdir)
+    else:
+        evaluation(config, X_test, y_test, num_classes, df['average'].values, logdir=logdir)
 
-    evaluation(config, x, y, num_classes, df['average'].values, logdir=logdir)
 
-
-def evaluation(config, x, y, num_classes, feature_rank_values, logdir):
+def evaluation(config, X, y, num_classes, feature_rank_values, logdir):
     # write config file to log directory
     with open(os.path.join(logdir, 'config.json'), 'w') as fw:
         json.dump(config, fw, indent=4)
@@ -193,10 +191,10 @@ def evaluation(config, x, y, num_classes, feature_rank_values, logdir):
 
     from evaluation import k_means_accuracy, r_squared
     # add all other evaluation functions here and log their results to somewhere persistent
-    acc_scores = k_means_accuracy(x, y, num_clusters=num_classes, feature_rank_values=feature_rank_values,
+    acc_scores = k_means_accuracy(X, y, num_clusters=num_classes, feature_rank_values=feature_rank_values,
                                   top_n=config['evaluation']['k_means_accuracy']['top_n'])
     logging.info("ACC: {}".format(acc_scores))
-    r_scores = r_squared(x, y, num_clusters=num_classes, feature_rank_values=feature_rank_values,
+    r_scores = r_squared(X, y, num_clusters=num_classes, feature_rank_values=feature_rank_values,
                          top_n=config['evaluation']['r_squared']['top_n'])
     logging.info("R²: {}".format(r_scores))
 

@@ -5,6 +5,9 @@ from sklearn import metrics
 
 # TODO: Validate
 def get_id(dataset):
+    """
+    Estimate the Intrisitc Dimension the way they did in the paper.
+    """
     # calculate pairwise distance
     distances = metrics.pairwise_distances(dataset, Y=None, metrics="euclidian", n_jobs=None)
 

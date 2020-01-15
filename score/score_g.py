@@ -1,6 +1,7 @@
 import numpy as np
 
 
+# TODO!
 def score(model):
     # get the first layer
     layer = model.get_layer('encoder')

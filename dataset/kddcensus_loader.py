@@ -1,6 +1,7 @@
 import pandas as pd
 
 
+# TODO!
 def get_dataset():
-    census = 0
+    census = []
     return census, census, 0

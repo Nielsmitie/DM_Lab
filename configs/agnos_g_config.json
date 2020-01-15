@@ -1,59 +1,60 @@
 {
-    "pipeline": {
-      "dataset": "mat_loader",
-      "normalize": "normalizer",
-      "id": "hardcode",
-      "model": "auto_encoder",
-      "loss": "loss_g",
-      "score": "score_g"
+  "pipeline": {
+    "dataset": "mat_loader",
+    "normalize": "normalizer",
+    "id": "hardcode",
+    "model": "auto_encoder",
+    "loss": "loss_g",
+    "score": "score_g"
+  },
+  "training": {
+    "lr": 1e-2,
+    "epochs": 150,
+    "batch_size": 8,
+    "metrics": ["mean_squared_error"],
+    "validation_split": 0,
+    "repetitions": 10,
+    "patience": 0,
+    "hist_n_times": 10
+  },
+  "dataset": {
+    "mat_loader": {"name": "arcene"},
+    "iris_loader": {},
+    "test_split": 0.0
+  },
+  "normalize": {
+    "identity" : {},
+    "normalizer": {}
+  },
+  "id": {
+    "pca_estimate": {"n_components":  0.99},
+    "id_estimation": {},
+    "hardcode": {"id": 40}
+  },
+  "model": {
+    "auto_encoder": {
+      "activation_hidden": "tanh",
+      "activation_output": "tanh",
+      "loss": "mean_squared_error",
+      "kernel_initializer": "glorot_normal"
+    }
+  },
+  "loss": {
+    "loss_w": {"alpha": 1},
+    "loss_g": {"alpha": 1},
+    "loss_s": {"alpha": 1}
+  },
+  "score": {
+    "score_w": {},
+    "score_s": {},
+    "score_g": {}
+  },
+  "evaluation": {
+    "k_means_accuracy": {
+      "top_n": [100]
     },
-    "training": {
-      "lr": 1e-2,
-      "epochs": 150,
-      "batch_size": 8,
-      "metrics": ["mean_squared_error"],
-      "validation_split": 0,
-      "repetitions": 10,
-      "patience": 0,
-      "hist_n_times": 10
-    },
-    "dataset": {
-      "mat_loader": {"name": "arcene"},
-      "iris_loader": {}
-    },
-    "normalize": {
-      "identity" : {},
-      "normalizer": {}
-    },
-    "id": {
-      "pca_estimate": {"n_components":  0.99},
-      "id_estimation": {},
-      "hardcode": {"id": 40}
-    },
-    "model": {
-      "auto_encoder": {
-        "activation_hidden": "tanh",
-        "activation_output": "tanh",
-        "loss": "mean_squared_error",
-        "kernel_initializer": "glorot_normal"
-      }
-    },
-    "loss": {
-      "loss_w": {"alpha": 1},
-      "loss_g": {"alpha": 1},
-      "loss_s": {"alpha": 1}
-    },
-    "score": {
-      "score_w": {},
-      "score_s": {},
-      "score_g": {}
-    },
-    "evaluation": {
-      "k_means_accuracy": {
-        "top_n": [100]
-      },
-      "r_squared": {
-        "top_n": [100]
-      }
+    "r_squared": {
+      "top_n": [100]
     }
   }
+}
