@@ -197,7 +197,7 @@ def evaluation(config, X, y, num_classes, feature_rank_values, logdir, result_cs
                          top_n=config['evaluation']['r_squared']['top_n'])
     logging.info("R²: {}".format(r_scores))
 
-    save_result(config, {'acc': [str(acc_scores)], 'r_square': [str(r_scores)]},
+    save_result(config, {'acc': acc_scores, 'r_square': r_scores}, dir_name=logdir,
                 path_to_result_file=os.path.join('logs', result_csv))
 
 

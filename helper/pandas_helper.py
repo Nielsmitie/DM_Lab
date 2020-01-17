@@ -9,10 +9,10 @@ def pd_read_multi_column(path_to_file, *args, **kwargs):
 
     acc = df['acc']
     acc.columns = acc.columns.astype('int')
-    r = df['r_squared']
+    r = df['r_square']
     r.columns = r.columns.astype('int')
 
-    df = pd.concat([acc, r, df['config']], axis=1, keys=['r_squared', 'acc', 'config'])
+    df = pd.concat([acc, r, df['config']], axis=1, keys=['r_square', 'acc', 'config'])
 
     return df
 

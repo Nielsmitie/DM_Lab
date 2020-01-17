@@ -5,7 +5,7 @@ import os
 from helper import pandas_helper
 
 
-def save_result(config, results, path_to_result_file='logs/results.csv'):
+def save_result(config, results, dir_name=None, path_to_result_file='logs/results.csv'):
     # extract the parameters used for training
     training = pd.DataFrame.from_dict([config['training']])
     # extract the steps from the pipeline and merge them with the arguments used
@@ -24,6 +24,8 @@ def save_result(config, results, path_to_result_file='logs/results.csv'):
     metrics['config'] = one_liner
     # merge them with a multiindex
     results = pd.concat(metrics.values(), keys=metrics.keys(), axis=1)
+    if dir_name:
+        results.index = [dir_name]
     # results.columns = pd.MultiIndex.from_tuples(results.columns)
     # now all config is found under the multiindex column config, and all accuracy is stored by the
     # number of top k features
@@ -47,12 +49,16 @@ def save_result(config, results, path_to_result_file='logs/results.csv'):
 
 
 if __name__ == '__main__':
-    path_to_result_file = 'logs/test_results.csv'
+    path_to_result_file = 'logs/paper_agnos_s.csv'
+    '''
+
     with open('configs/paper_config.json') as fr:
         config = json.load(fr)
-    save_result(config, {'acc': {500: 0.5, 100: 1}, 'r_squared': {500: 0.5, 100: 1}}, path_to_result_file=path_to_result_file)
-    save_result(config, {'acc': {500: 0.5, 100: 1}, 'r_squared': {500: 0.5, 100: 1}}, path_to_result_file=path_to_result_file)
-    save_result(config, {'acc': {500: 0.5, 100: 1}, 'r_squared': {500: 0.5, 100: 1}}, path_to_result_file=path_to_result_file)
-
+    save_result(config, {'acc': {500: 0.5}, 'r_square': {500: 0.5}}, path_to_result_file=path_to_result_file)
+    save_result(config, {'acc': {500: 0.5}, 'r_square': {500: 0.5}}, path_to_result_file=path_to_result_file)
+    save_result(config, {'acc': {500: 0.5}, 'r_square': {500: 0.5}}, path_to_result_file=path_to_result_file)
+    '''
     df = pandas_helper.pd_read_multi_column(path_to_result_file)
+    mean = df[[('config', 'dataset'), ('acc', 100), ('r_square', 100)]].groupby(('config', 'dataset')).mean()
+    print(mean)
     print(df)
