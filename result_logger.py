@@ -13,8 +13,8 @@ def save_result(config, results, path_to_result_file='logs/results.csv'):
     one_liner = pd.concat([pipeline, training], axis=1)
 
     # merge the result from this run with results from the previous runs
-    results = pd.DataFrame.from_dict(results)
-    results = pd.concat([one_liner, results], axis=1)
+    results = pd.DataFrame.from_dict(results).T.stack()
+    results = pd.concat([one_liner.stack(), results], axis=0)
     # if log dir does not exist
     if not os.path.isdir('logs'):
         os.mkdir('logs')
@@ -22,18 +22,19 @@ def save_result(config, results, path_to_result_file='logs/results.csv'):
     if not os.path.isfile(path_to_result_file):
         df = results
     else:
-        df = pd.read_csv(path_to_result_file)
+        df = pd.read_csv(path_to_result_file, index_col=[0, 1])
         df = df.append(results, ignore_index=True, sort=False)
 
-    df.to_csv(path_to_result_file, index=False)
+    df.to_csv(path_to_result_file, index=True)
 
 
 if __name__ == '__main__':
-    # with open('configs/paper_config.json') as fr:
-    #    config = json.load(fr)
-    # save_result(config, {'acc': [str([500])], 'r_squared': [str([500])]})
-    # save_result(config, {'acc': [str([500, 500])], 'r_squared': [str([500, 500])]})
-    # save_result(config, {'acc': [str([500])], 'r_squared': [str([500])]})
+    path_to_result_file = 'logs/test_results.csv'
+    with open('configs/paper_config.json') as fr:
+        config = json.load(fr)
+    save_result(config, {'acc': {500: 0.5, 100: 1}, 'r_squared': {500: 0.5, 100: 1}}, path_to_result_file=path_to_result_file)
+    save_result(config, {'acc': {500: 0.5, 100: 1}, 'r_squared': {500: 0.5, 100: 1}}, path_to_result_file=path_to_result_file)
+    save_result(config, {'acc': {500: 0.5, 100: 1}, 'r_squared': {500: 0.5, 100: 1}}, path_to_result_file=path_to_result_file)
 
-    df = pd.read_csv('logs/results.csv')
+    df = pd.read_csv()
     print(df)
