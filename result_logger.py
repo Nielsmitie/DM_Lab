@@ -2,6 +2,8 @@ import json
 import pandas as pd
 import os
 
+from helper import pandas_helper
+
 
 def save_result(config, results, path_to_result_file='logs/results.csv'):
     # extract the parameters used for training
@@ -13,8 +15,19 @@ def save_result(config, results, path_to_result_file='logs/results.csv'):
     one_liner = pd.concat([pipeline, training], axis=1)
 
     # merge the result from this run with results from the previous runs
-    results = pd.DataFrame.from_dict(results).T.stack()
-    results = pd.concat([one_liner.stack(), results], axis=0)
+    # for each metric create a dataframe
+    metrics = {}
+    tmp = pd.DataFrame.from_dict(results)
+    for i in results.keys():
+        metrics[i] = tmp[[i]].T.reset_index(drop=True)
+    # add the config
+    metrics['config'] = one_liner
+    # merge them with a multiindex
+    results = pd.concat(metrics.values(), keys=metrics.keys(), axis=1)
+    # results.columns = pd.MultiIndex.from_tuples(results.columns)
+    # now all config is found under the multiindex column config, and all accuracy is stored by the
+    # number of top k features
+
     # if log dir does not exist
     if not os.path.isdir('logs'):
         os.mkdir('logs')
@@ -22,10 +35,15 @@ def save_result(config, results, path_to_result_file='logs/results.csv'):
     if not os.path.isfile(path_to_result_file):
         df = results
     else:
-        df = pd.read_csv(path_to_result_file, index_col=[0, 1])
-        df = df.append(results, ignore_index=True, sort=False)
+        # now it is the challenge to retrieve the multicolumn dataframe
+        df = pandas_helper.pd_read_multi_column(path_to_result_file)
+        # df.T[1] = results.T
+        # results.reset_index().join(df, on=df.index).set_index(results.index.names)
+        df = results.T.reset_index().join(df.T, on=['level_0', 'level_1'], lsuffix='ka', how='outer')\
+            .set_index(['level_0', 'level_1']).T
+        # df = pd.concat([df, results], ignore_index=True, sort=False)
 
-    df.to_csv(path_to_result_file, index=True)
+    df.to_csv(path_to_result_file, index=False)
 
 
 if __name__ == '__main__':
@@ -36,5 +54,5 @@ if __name__ == '__main__':
     save_result(config, {'acc': {500: 0.5, 100: 1}, 'r_squared': {500: 0.5, 100: 1}}, path_to_result_file=path_to_result_file)
     save_result(config, {'acc': {500: 0.5, 100: 1}, 'r_squared': {500: 0.5, 100: 1}}, path_to_result_file=path_to_result_file)
 
-    df = pd.read_csv()
+    df = pandas_helper.pd_read_multi_column(path_to_result_file)
     print(df)
