@@ -63,7 +63,7 @@ def parse_args():
     return args.parse_args()
 
 
-def main(args, config):
+def main(args, config, result_csv='result.csv'):
     cfg_train = config['training']
 
     # for each python package import all functions with the name indicated in the given string
@@ -110,9 +110,9 @@ def main(args, config):
                                    n_clusters=num_classes)
         """ Model evaluation """
         if len(X_test) == 0:
-            evaluation(config, X_train, y_train, num_classes, mr, logdir=logdir)
+            evaluation(config, X_train, y_train, num_classes, mr, logdir=logdir, result_csv=result_csv)
         else:
-            evaluation(config, X_test, y_test, num_classes, mr, logdir=logdir)
+            evaluation(config, X_test, y_test, num_classes, mr, logdir=logdir, result_csv=result_csv)
         sys.exit(0)
 
     """ Auto-Encoder Model """
@@ -137,7 +137,6 @@ def main(args, config):
                           histogram_freq=config['training']['epochs'] // config['training']['hist_n_times'])
 
         # early stopping to reduce the number of epochs
-        # TODO: decide if restore_best_weights be True or False
         callbacks = [tbc]
         if cfg_train['patience'] != 0:
             early_stopping = EarlyStopping(monitor='val_mean_squared_error', mode='min', restore_best_weights=True,
@@ -176,12 +175,12 @@ def main(args, config):
 
     """ Model evaluation """
     if len(X_test) == 0:
-        evaluation(config, X_train, y_train, num_classes, df['average'].values, logdir=logdir)
+        evaluation(config, X_train, y_train, num_classes, df['average'].values, logdir=logdir, result_csv=result_csv)
     else:
-        evaluation(config, X_test, y_test, num_classes, df['average'].values, logdir=logdir)
+        evaluation(config, X_test, y_test, num_classes, df['average'].values, logdir=logdir, result_csv=result_csv)
 
 
-def evaluation(config, X, y, num_classes, feature_rank_values, logdir):
+def evaluation(config, X, y, num_classes, feature_rank_values, logdir, result_csv):
     # write config file to log directory
     with open(os.path.join(logdir, 'config.json'), 'w') as fw:
         json.dump(config, fw, indent=4)
@@ -198,8 +197,8 @@ def evaluation(config, X, y, num_classes, feature_rank_values, logdir):
                          top_n=config['evaluation']['r_squared']['top_n'])
     logging.info("R²: {}".format(r_scores))
 
-    save_result(config, {'acc': [str(acc_scores)], 'r_square': [str(r_scores)]},
-                path_to_result_file=os.path.join('logs', 'results.csv'))
+    save_result(config, {'acc': acc_scores, 'r_square': r_scores}, dir_name=logdir,
+                path_to_result_file=os.path.join('logs', result_csv))
 
 
 if __name__ == '__main__':
