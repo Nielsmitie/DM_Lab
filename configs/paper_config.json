@@ -20,12 +20,16 @@
   "dataset": {
     "mat_loader": {"name": "arcene"},
     "reuters_loader": {},
+    "mnist_loader": {},
+    "lung_loader": {},
+    "sonar_loader": {},
     "newsgroups_loader": {},
+    "olivetti_loader": {},
     "iris_loader": {},
     "test_split": 0.0
   },
   "normalize": {
-    "identity": {},
+    "dummy_normalizer": {},
     "normalizer": {"with_mean": 0}
   },
   "id": {

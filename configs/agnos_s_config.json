@@ -23,7 +23,7 @@
     "test_split": 0.0
   },
   "normalize": {
-    "identity" : {},
+    "dummy_normalizer" : {},
     "normalizer": {}
   },
   "id": {
