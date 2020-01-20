@@ -73,7 +73,7 @@ def main(args, config, result_csv='result.csv'):
     models = _register(model, 'get_model')
     loss_functions = _register(loss, 'losses')
     scoring_functions = _register(score, 'score')
-    competitors = ['SPEC', 'LAP', 'MCFS', 'NDFS']
+    competitors = ['SPEC', 'LAP', 'MCFS', 'NDFS', 'RANDOM']
 
     # specify log directory
     l = [config['pipeline']['model'], config['pipeline']['dataset'], datetime.now().strftime('%Y%m%d-%H%M%S')] + list(
@@ -106,8 +106,8 @@ def main(args, config, result_csv='result.csv'):
     if config['pipeline']['model'] in competitors:
         logging.info('Competitor-Method: {}'.format(config['pipeline']['model']))
         mr = models['competitors'](method=config['pipeline']['model'], X=X_train,
-                                   n_selected_features=config['model'][config['pipeline']['model']]['selected_features'],
-                                   n_clusters=num_classes)
+                                   n_clusters=num_classes,
+                                   **config['model'][config['pipeline']['model']])
         """ Model evaluation """
         if len(X_test) == 0:
             evaluation(config, X_train, y_train, num_classes, mr, logdir=logdir, result_csv=result_csv)

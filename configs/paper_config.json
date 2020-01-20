@@ -1,6 +1,6 @@
 {
   "pipeline": {
-    "dataset": "iris_loader",
+    "dataset": "mat_loader",
     "normalize": "normalizer",
     "id": "pca_estimate",
     "model": "auto_encoder",
@@ -44,10 +44,11 @@
       "loss": "mean_squared_error",
       "kernel_initializer": "glorot_normal"
     },
-    "LAP": {"selected_features": 20},
-    "NDFS": {"selected_features": 20},
-    "MCFS": {"selected_features": 20},
-    "SPEC": {"selected_features": 20}
+    "LAP": {},
+    "NDFS": {},
+    "MCFS": {"n_selected_features": 100},
+    "SPEC": {},
+    "RANDOM": {"n_selected_features": 100}
   },
   "loss": {
     "dummy_loss": {},

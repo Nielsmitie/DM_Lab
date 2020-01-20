@@ -38,7 +38,7 @@
       "loss": "mean_squared_error",
       "kernel_initializer": "glorot_uniform"
     },
-    "MCFS": {"selected_features":  20}
+    "MCFS": {"n_selected_features":  100}
   },
   "loss": {
     "dummy_loss": {}

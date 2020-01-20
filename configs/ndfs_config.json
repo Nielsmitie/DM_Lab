@@ -38,7 +38,7 @@
       "loss": "mean_squared_error",
       "kernel_initializer": "glorot_uniform"
     },
-    "NDFS": {"selected_features":  20}
+    "NDFS": {}
   },
   "loss": {
     "dummy_loss": {}

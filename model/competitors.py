@@ -1,20 +1,21 @@
 import sys
 import logging
-from skfeature.function.similarity_based.SPEC import spec
-from skfeature.function.similarity_based.lap_score import lap_score
-from skfeature.function.sparse_learning_based.MCFS import mcfs
-from skfeature.function.sparse_learning_based.NDFS import ndfs
+import random
+from skfeature.function.similarity_based import SPEC
+from skfeature.function.similarity_based import lap_score
+from skfeature.function.sparse_learning_based import MCFS
+from skfeature.function.sparse_learning_based import NDFS
 from skfeature.utility import construct_W
 from skfeature.utility.sparse_learning import feature_ranking
 
 
-def competitor(method, X, metric='cosine', weightMode='binary', k=5, t=0, style=0,
-               n_selected_features=20, n_clusters=5):
+def competitor(method, X, metric='cosine', weightMode='heatKernel', k=5, t=1, style=0,
+               n_selected_features=1, n_clusters=5):
     """
     Input
     -----
     method: {string}
-        selected competitor method (SPEC, LAP, MDFS, NDFS)
+        selected competitor method (SPEC, LAP, MDFS, NDFS, RANDOM)
     X: {numpy array}, shape (n_samples, n_features)
         input data
     n_selected_features: {int}
@@ -26,7 +27,7 @@ def competitor(method, X, metric='cosine', weightMode='binary', k=5, t=0, style=
             style >= 2, the third feature ranking function, use the first k except 1st eigenvalue
             (spec only)
         n_clusters: {int}
-            number of clusters (default is 5; mcfs and ndfs only)
+            number of clusters (default is 5; mcfs and ndfs only, normally equal to number of classes)
         metric: {string}
             choices for different distance measures
             'euclidean' - use euclidean distance
@@ -48,22 +49,27 @@ def competitor(method, X, metric='cosine', weightMode='binary', k=5, t=0, style=
     ------
     Returns either the score or W depending on the selected competitor method.
     score: {numpy array}, shape(n_features,)
-        score of the similarity_based methods (lap and spec) for each feature
-        
-    W: {numpy array}, shape(n_features, n_clusters)
-        feature weight matrix of the sparse_learning_based methods (mcfs, ndfs) 
+        score of the similarity_based methods for each feature
     """
-    kwargs = {"metric": metric, "weightMode": weightMode, "k": k, 't': t}
+    num_features = X.shape[1]
+    if n_selected_features > num_features:
+        n_selected_features = num_features
+        logging.warn("More features to select than given!")
+
+    if method.upper() == "RANDOM":
+        return random.choices(list(range(num_features)), k=n_selected_features)
+
+    kwargs = {"metric": metric, "neighborMode": "knn", "weightMode": weightMode, "k": k, 't': t}
     W = construct_W.construct_W(X, **kwargs)  # affinity matrix
 
-    if method == "SPEC":
-        return spec(X, **{'style': style}, W=W)
-    elif method == "LAP":
-        return lap_score(X, W=W)
-    elif method == "MCFS":
-        return feature_ranking(mcfs(X, n_selected_features, W=W, n_clusters=n_clusters))
-    elif method == "NDFS":
-        return feature_ranking(ndfs(X, W=W, n_clusters=n_clusters))
+    if method.upper() == "SPEC":
+        return SPEC.feature_ranking(SPEC.spec(X, **{'style': style}, W=W), **{'style': style})
+    elif method.upper() == "LAP":
+        return lap_score.feature_ranking(lap_score.lap_score(X, W=W))
+    elif method.upper() == "MCFS":
+        return MCFS.feature_ranking(MCFS.mcfs(X, n_selected_features=n_selected_features, W=W, n_clusters=n_clusters))
+    elif method.upper() == "NDFS":
+        return feature_ranking(NDFS.ndfs(X, W=W, n_clusters=n_clusters))
     else:
         logging.error("Method not known!")
 

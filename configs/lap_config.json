@@ -38,7 +38,7 @@
       "loss": "mean_squared_error",
       "kernel_initializer": "glorot_uniform"
     },
-    "LAP": {"selected_features":  20}
+    "LAP": {}
   },
   "loss": {
     "dummy_loss": {}
