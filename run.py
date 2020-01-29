@@ -13,8 +13,7 @@ def run_experiments(config, experiment_name, repeats):
         for repeat in range(repeats):
             config['dataset'][config['pipeline']['dataset']]['name'] = dataset
             config['id']['hardcode']['id'] = id
-
-            print('running with {} and id {}'.format(dataset, id))
+            print('{}/{} running with {} and id {}'.format(repeat+1, repeats, dataset, id))
             main([], config, experiment_name)
 
 

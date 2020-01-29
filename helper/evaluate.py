@@ -1,3 +1,7 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
 def extract_values(df, column, replace_before='{100: ', replace_after='}'):
     df[column] = df[column].str.replace(replace_before, '').str.replace(replace_after, '').astype('float')
     df = df[[column, 'dataset']].set_index('dataset').T

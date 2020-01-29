@@ -113,7 +113,7 @@ def main(args, config, result_csv='result.csv'):
             evaluation(config, X_train, y_train, num_classes, mr, logdir=logdir, result_csv=result_csv)
         else:
             evaluation(config, X_test, y_test, num_classes, mr, logdir=logdir, result_csv=result_csv)
-        sys.exit(0)
+        return
 
     """ Auto-Encoder Model """
     """ Loss function and Compile """
