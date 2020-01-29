@@ -9,8 +9,8 @@ from helper import paper
 
 
 def run_experiments(config, experiment_name, repeats):
-    for repeat in range(repeats):
-        for dataset, id in paper.ids.items():
+    for dataset, id in paper.ids.items():
+        for repeat in range(repeats):
             config['dataset'][config['pipeline']['dataset']]['name'] = dataset
             config['id']['hardcode']['id'] = id
 
