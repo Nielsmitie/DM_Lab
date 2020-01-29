@@ -2,7 +2,6 @@ import tensorflow as tf
 from tensorflow.keras import regularizers
 from tensorflow.python.keras import backend as K
 
-# TODO: test if this is really corretly implemented
 # observation: The loss is decreasing faster and with less deviation. Maybe even further
 # but both versions reach the same purity score
 

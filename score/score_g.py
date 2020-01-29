@@ -1,14 +1,16 @@
 import numpy as np
+import tensorflow as tf
 
 
-# TODO!
+# TODO: WIP
 def score(model):
-    # get the first layer
-    layer = model.get_layer('encoder')
-    # extracts weights
-    weights = layer.get_weights()[0]
+    """
+    Gets the model and returns the scoring of the features.
+    Only works if activation function is tanh due to
+    tanh' =  1 - tanh².
+    """
     # calculate the scores
-    grad = 0
-    scores = np.amax(weights*(1-grad**2), axis=1)
+    scores = tf.reduce_sum(tf.reduce_sum(tf.square(tf.multiply(tf.expand_dims(model.get_layer('encoder').get_weights()[0],0),
+                           (1-tf.square(tf.expand_dims(model.get_layer('encoder'), 1))))), axis=1), axis=0)
     # the final score is a importance measure for each feature
     return scores

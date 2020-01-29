@@ -1,6 +1,6 @@
 from scipy.io.arff import loadarff
 import os
-data, _ = loadarff(os.path.join("data/", "sonar_arff.arff"))
+
 
 def get_dataset():
     """
