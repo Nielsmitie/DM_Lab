@@ -1,0 +1,4 @@
+acc,r_square,config,config,config,config,config,config,config,config,config,config,config,config,config
+100,100,dataset,normalize,id,model,score,lr,epochs,batch_size,metrics,validation_split,repetitions,patience,hist_n_times
+0.555,-0.12551586430773648,mat_loader{'name': 'arcene'},normalizer{'with_mean': 0},pca_estimate{'n_components': 0.99},"auto_encoder{'activation_hidden': 'tanh', 'activation_output': 'tanh', 'loss': 'mean_squared_error', 'kernel_initializer': 'glorot_normal'}",score_w{},0.01,10,8,['mean_squared_error'],0,10,0,10
+-0.1544456218804168,0.555,mat_loader{'name': 'arcene'},normalizer{'with_mean': 0},pca_estimate{'n_components': 0.99},"auto_encoder{'activation_hidden': 'tanh', 'activation_output': 'tanh', 'loss': 'mean_squared_error', 'kernel_initializer': 'glorot_normal'}",score_w{},0.01,1000,8,['mean_squared_error'],0.1,3,50,10

@@ -1,0 +1,22 @@
+dataset,normalize,id,model,score,lr,epochs,batch_size,metrics,validation_split,repetitions,patience,hist_n_times,acc,r_square
+iris_loader{},normalizer{},pca_estimate{'n_components': 0.99},NDFS{'selected_features': 20},score_w{},0.0001,10,32,['mean_squared_error'],0.1,10,50,10,{100: 0.82},{100: 0.9885657632957405}
+mat_loader{'name': 'arcene'},normalizer{},pca_estimate{'n_components': 0.99},LAP{'selected_features': 20},score_w{},0.0001,10,32,['mean_squared_error'],0.1,10,50,10,{100: 0.59},{100: 0.5478549595860116}
+mat_loader{'name': 'arcene'},normalizer{},hardcode{'id': 40},SPEC{'selected_features': 20},score_w{},0.0001,10,32,['mean_squared_error'],0.1,10,50,10,{100: 0.59},{100: 0.5478549595860116}
+mat_loader{'name': 'arcene'},normalizer{},hardcode{'id': 40},SPEC{'selected_features': 20},score_w{},0.0001,100,32,['mean_squared_error'],0.1,10,50,10,{100: 0.59},{100: 0.5478549595860116}
+mat_loader{'name': 'arcene'},normalizer{},hardcode{'id': 40},SPEC{'selected_features': 20},score_w{},0.0001,150,32,['mean_squared_error'],0.1,10,50,10,{100: 0.59},{100: 0.5478549595860116}
+mat_loader{'name': 'Isolet'},normalizer{},hardcode{'id': 9},SPEC{'selected_features': 20},score_w{},0.0001,150,32,['mean_squared_error'],0.1,10,50,10,{100: 0.5051282051282051},{100: 0.7014644752266773}
+mat_loader{'name': 'ORL'},normalizer{},hardcode{'id': 6},SPEC{'selected_features': 20},score_w{},0.0001,150,32,['mean_squared_error'],0.1,10,50,10,{100: 0.5175},{100: 0.7361828329664166}
+mat_loader{'name': 'pixraw10P'},normalizer{},hardcode{'id': 4},SPEC{'selected_features': 20},score_w{},0.0001,150,32,['mean_squared_error'],0.1,10,50,10,{100: 0.79},{100: 0.7717034074738882}
+mat_loader{'name': 'Prostate-GE'},normalizer{},hardcode{'id': 23},SPEC{'selected_features': 20},score_w{},0.0001,150,32,['mean_squared_error'],0.1,10,50,10,{100: 0.5686274509803921},{100: 0.5374437564426036}
+mat_loader{'name': 'TOX-171'},normalizer{},hardcode{'id': 15},SPEC{'selected_features': 20},score_w{},0.0001,150,32,['mean_squared_error'],0.1,10,50,10,{100: 0.47368421052631576},{100: 0.5415622738993355}
+mat_loader{'name': 'warpPIE10P'},normalizer{},hardcode{'id': 15},SPEC{'selected_features': 3},score_w{},0.0001,150,32,['mean_squared_error'],0.1,10,50,10,{100: 0.4380952380952381},{100: 0.8271934402853554}
+mat_loader{'name': 'warpPIE10P'},normalizer{},hardcode{'id': 3},SPEC{'selected_features': 3},score_w{},0.0001,150,32,['mean_squared_error'],0.1,10,50,10,{100: 0.44761904761904764},{100: 0.8271934402853554}
+mat_loader{'name': 'Yale'},normalizer{},hardcode{'id': 10},SPEC{'selected_features': 3},score_w{},0.0001,150,32,['mean_squared_error'],0.1,10,50,10,{100: 0.5333333333333333},{100: 0.6129281779242413}
+mat_loader{'name': 'arcene'},normalizer{},hardcode{'id': 40},LAP{'selected_features': 20},score_w{},0.0001,10,32,['mean_squared_error'],0.1,10,50,10,{100: 0.59},{100: 0.5478549595860116}
+mat_loader{'name': 'Isolet'},normalizer{},hardcode{'id': 9},LAP{'selected_features': 20},score_w{},0.0001,10,32,['mean_squared_error'],0.1,10,50,10,{100: 0.48525641025641025},{100: 0.7014644752266773}
+mat_loader{'name': 'ORL'},normalizer{},hardcode{'id': 6},LAP{'selected_features': 20},score_w{},0.0001,10,32,['mean_squared_error'],0.1,10,50,10,{100: 0.495},{100: 0.7361828329664166}
+mat_loader{'name': 'pixraw10P'},normalizer{},hardcode{'id': 4},LAP{'selected_features': 20},score_w{},0.0001,10,32,['mean_squared_error'],0.1,10,50,10,{100: 0.8},{100: 0.7717034074738882}
+mat_loader{'name': 'Prostate-GE'},normalizer{},hardcode{'id': 23},LAP{'selected_features': 20},score_w{},0.0001,10,32,['mean_squared_error'],0.1,10,50,10,{100: 0.5686274509803921},{100: 0.5374437564426036}
+mat_loader{'name': 'TOX-171'},normalizer{},hardcode{'id': 15},LAP{'selected_features': 20},score_w{},0.0001,10,32,['mean_squared_error'],0.1,10,50,10,{100: 0.47368421052631576},{100: 0.5415622738993355}
+mat_loader{'name': 'warpPie10P'},normalizer{},hardcode{'id': 3},LAP{'selected_features': 20},score_w{},0.0001,10,32,['mean_squared_error'],0.1,10,50,10,{100: 0.43333333333333335},{100: 0.8271934402853554}
+mat_loader{'name': 'Yale'},normalizer{},hardcode{'id': 10},LAP{'selected_features': 20},score_w{},0.0001,10,32,['mean_squared_error'],0.1,10,50,10,{100: 0.4909090909090909},{100: 0.6129281779242413}
