@@ -49,7 +49,7 @@ def save_result(config, results, dir_name=None, path_to_result_file='logs/result
 
 
 if __name__ == '__main__':
-    path_to_result_file = 'logs/paper_agnos_s.csv'
+    path_to_result_file = 'results/paper_agnos_s.csv'
     '''
 
     with open('configs/paper_config.json') as fr:
@@ -58,7 +58,26 @@ if __name__ == '__main__':
     save_result(config, {'acc': {500: 0.5}, 'r_square': {500: 0.5}}, path_to_result_file=path_to_result_file)
     save_result(config, {'acc': {500: 0.5}, 'r_square': {500: 0.5}}, path_to_result_file=path_to_result_file)
     '''
+    from helper.paper import datasets, acc_results, r2_results
+    paper = pd.concat([pd.DataFrame(acc_results, index=datasets).T, pd.DataFrame(r2_results, index=datasets).T],
+                      keys=['acc', 'r_square'], axis=1).stack()
+
     df = pandas_helper.pd_read_multi_column(path_to_result_file)
     mean = df[[('config', 'dataset'), ('acc', 100), ('r_square', 100)]].groupby(('config', 'dataset')).mean()
-    print(mean)
-    print(df)
+
+    mean = mean.T.reset_index(level=-1, drop=True).T
+    mean.index = [i.replace("mat_loader{'name': '", "").replace("'}", "") for i in mean.index]
+
+    result = paper.reset_index(level=1).join(mean, on='level_1', rsuffix='_paper', lsuffix='_experiment').set_index('level_1', append=True)
+
+    result['deviance_acc'] = (1 - (result['acc_paper'] / result['acc_experiment'])) * 100
+    result['deviance_r2'] = (1 - (result['r_square_paper'] / result['r_square_experiment'])) * 100
+
+    results = result[['acc_paper', 'acc_experiment', 'r_square_paper', 'r_square_experiment']]
+    deviance = result[['deviance_acc', 'deviance_r2']]
+    print(results)
+    print(deviance)
+    std = df[[('config', 'dataset'), ('acc', 100), ('r_square', 100)]].groupby(('config', 'dataset')).std()
+    std = std.T.reset_index(level=-1, drop=True).T
+    print(std)
+    # print(df)
