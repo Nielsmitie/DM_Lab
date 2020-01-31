@@ -93,12 +93,16 @@ if __name__ == '__main__':
             "'}",
             "") for i in mean.index]
 
-    result = paper.reset_index().join(mean, on='level_1', rsuffix='_experiment', lsuffix='_paper').set_index(['level_0', 'level_1'])
+    result = paper.reset_index().join(mean, on='level_1', rsuffix='_experiment',
+                                      lsuffix='_paper').set_index(['level_0', 'level_1'])
 
-    result['deviance_acc'] = (1 - (result['acc_paper'] / result['acc_experiment'])) * 100
+    result['deviance_acc'] = (
+        1 - (result['acc_paper'] / result['acc_experiment'])) * 100
     result['diff_acc'] = result['acc_paper'] - result['acc_experiment']
-    result['deviance_r2'] = (1 - (result['r_square_paper'] / result['r_square_experiment'])) * 100
-    result['diff_r2'] = result['r_square_paper'] - result['r_square_experiment']
+    result['deviance_r2'] = (
+        1 - (result['r_square_paper'] / result['r_square_experiment'])) * 100
+    result['diff_r2'] = result['r_square_paper'] - \
+        result['r_square_experiment']
 
     results = result[['acc_paper', 'acc_experiment',
                       'r_square_paper', 'r_square_experiment']]

@@ -116,7 +116,8 @@ def main(args, config, result_csv='result.csv', log_level=logging.DEBUG):
         X, **config['normalize'][config['pipeline']['normalize']])
     test_size = float(config['dataset']['test_split'])
     if test_size != 0. and test_size != 1.:
-        X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y, test_size=test_size, shuffle=True, stratify=y)
+        X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(
+            X, y, test_size=test_size, shuffle=True, stratify=y)
     else:
         X_train = X
         X_test = []
@@ -244,7 +245,8 @@ def evaluation(config, X, y, num_classes, sorted_features, logdir, result_csv):
     from evaluation import k_means_accuracy, r_squared
     logging.info("Calculating ACC...")
     acc_scores = k_means_accuracy(X, y, num_clusters=num_classes, sorted_features=sorted_features,
-                                  top_n=config['evaluation']['k_means_accuracy']['top_n'], repetitions=20) # TODO: Add repetitions to configs
+                                  top_n=config['evaluation']['k_means_accuracy']['top_n'],
+                                  repetitions=config['evaluation']['k_means_accuracy']['repetitions'])
     logging.info("ACC: {}".format(acc_scores))
     logging.info("Calculating R squared...")
     r_scores = r_squared(X, y, num_clusters=num_classes, sorted_features=sorted_features,

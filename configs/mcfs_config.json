@@ -52,7 +52,8 @@
   },
   "evaluation": {
     "k_means_accuracy": {
-      "top_n": [100]
+      "top_n": [100],
+      "repetitions": 20
     },
     "r_squared": {
       "top_n": [100]

@@ -19,6 +19,12 @@
   },
   "dataset": {
     "mat_loader": {"name": "arcene"},
+    "reuters_loader": {},
+    "mnist_loader": {},
+    "lung_loader": {},
+    "sonar_loader": {},
+    "newsgroups_loader": {},
+    "olivetti_loader": {},
     "iris_loader": {},
     "test_split": 0.2
   },
@@ -51,7 +57,8 @@
   },
   "evaluation": {
     "k_means_accuracy": {
-      "top_n": [100]
+      "top_n": [100],
+      "repetitions": 20
     },
     "r_squared": {
       "top_n": [100]
