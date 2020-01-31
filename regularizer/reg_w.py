@@ -7,13 +7,13 @@ from tensorflow.python.keras import backend as K
 # TODO: Compare to L1-L2 from Keras
 def regularizer(alpha):
     """Return kernel regularizer using L1-L2.
-    
+
     Arguments:
         alpha {float} -- Regularization factor
-    
+
     Returns:
         dict -- Dict containing kernel_regularizer with L1-L2 regularizer
-    """    
+    """
     return {'kernel_regularizer': l1_minus_l2(alpha)}
 
 
@@ -21,6 +21,7 @@ class L2MinusL1(regularizers.Regularizer):
     """
     Wrapper to save the strength of the regularization outside of the training loop.
     """
+
     def __init__(self, alpha=1.0):
         self.alpha = K.cast_to_floatx(alpha)
 

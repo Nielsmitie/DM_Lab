@@ -6,15 +6,16 @@ from sklearn import metrics
 # TODO: Validate
 def get_id(dataset):
     """Estimate the Intrisitc Dimension the way they did in the paper.
-    
+
     Arguments:
         dataset {list} -- Dataset
-    
+
     Returns:
         int -- Intristic Dimension
-    """    
+    """
     # calculate pairwise distance
-    distances = metrics.pairwise_distances(dataset, Y=None, metrics="euclidian", n_jobs=None)
+    distances = metrics.pairwise_distances(
+        dataset, Y=None, metrics="euclidian", n_jobs=None)
 
     # two shortest distances for each point r1, r2
     shortest_distances = []
@@ -24,7 +25,8 @@ def get_id(dataset):
     r2r1_quotient = []
     for i in range(len(shortest_distances)):
         # r2r1_quotient[i] = shortest_distances[i][1] / shortest_distances[i][0]
-        r2r1_quotient[i] = distances[shortest_distances[i][1]] / distances[shortest_distances[i][0]]
+        r2r1_quotient[i] = distances[shortest_distances[i]
+                                     [1]] / distances[shortest_distances[i][0]]
     # sort µ ascending
     r2r1_quotient.sort()
 

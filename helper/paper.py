@@ -1,6 +1,14 @@
 
 
-datasets = ['arcene', 'Isolet', 'ORL', 'pixraw10P', 'Prostate-GE', 'TOX-171', 'warpPIE10P', 'Yale']
+datasets = [
+    'arcene',
+    'Isolet',
+    'ORL',
+    'pixraw10P',
+    'Prostate-GE',
+    'TOX-171',
+    'warpPIE10P',
+    'Yale']
 
 ids = dict(zip(datasets, [40, 9, 6, 4, 23, 15, 3, 10]))
 

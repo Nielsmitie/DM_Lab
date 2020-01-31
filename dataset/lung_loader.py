@@ -5,10 +5,10 @@ import os
 
 def get_dataset():
     """Load the lung cancer dataset.
-    
+
     Returns:
         (X, y, n) -- (dataset, labels, #classes)
-    """    
+    """
     lung = pd.read_csv(os.path.abspath("data/lung-cancer.data"), header=None)
     y = list(lung[1])
     lung = lung.drop(1, axis=1)

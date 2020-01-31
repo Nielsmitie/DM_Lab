@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 import sklearn
 
-import sys as  sys
+import sys as sys
 
 import tensorflow as tf
 from tensorflow.keras.callbacks import TensorBoard, EarlyStopping
@@ -35,18 +35,20 @@ The syntax of the config file is as follows:
   method are defined. (It is possible to only list the used steps) (This is only a separate section to define params)
 """
 
-# TODO: Use seeding/random states at every random operation and log them to make results replicable
+# TODO: Use seeding/random states at every random operation and log them
+# to make results replicable
+
 
 def _register(module, func_name):
     """Register modul given a function name.
-    
+
     Arguments:
         module {module} -- Module
         func_name {str} -- Name of the function used to call the module
-    
+
     Returns:
         dict -- Registered functions
-    """    
+    """
     registered = {}
     for i in dir(module):
         if i[:1] == '_':
@@ -59,21 +61,27 @@ def _register(module, func_name):
 
 def parse_args():
     """Parse arguments from command line.
-    
+
     Returns:
         Namespace -- Parsed arguments
-    """    
+    """
     args = ArgumentParser()
     args.add_argument('--debug', action='store_true')
     args.add_argument('--cpu', action='store_true', help='train on CPU')
-    args.add_argument('--config', type=str, default=os.path.join('configs', 'paper_config.json'))
+    args.add_argument(
+        '--config',
+        type=str,
+        default=os.path.join(
+            'configs',
+            'paper_config.json'))
     return args.parse_args()
 
 
 def main(args, config, result_csv='result.csv', log_level=logging.DEBUG):
     cfg_train = config['training']
 
-    # for each python package import all functions with the name indicated in the given string
+    # for each python package import all functions with the name indicated in
+    # the given string
     datasets = _register(dataset, 'get_dataset')
     normalizers = _register(normalize, 'normalize')
     id_estimators = _register(id, 'get_id')
@@ -89,18 +97,27 @@ def main(args, config, result_csv='result.csv', log_level=logging.DEBUG):
     logdir = os.path.join('logs', log_prefix)
     if not os.path.isdir(logdir):
         os.makedirs(logdir)
-    logging.basicConfig(filename=os.path.join(logdir, "logs.log"), level=log_level, format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', datefmt='%m-%d %H:%M:%S')
+    logging.basicConfig(
+        filename=os.path.join(
+            logdir,
+            "logs.log"),
+        level=log_level,
+        format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+        datefmt='%m-%d %H:%M:%S')
     logging.info("Log directory: {}".format(logdir))
 
     """ Dataset loading """
     logging.info("Load dataset: {}".format(config['pipeline']['dataset']))
-    X, y, num_classes = datasets[config['pipeline']['dataset']](**config['dataset'][config['pipeline']['dataset']])
+    X, y, num_classes = datasets[config['pipeline']['dataset']](
+        **config['dataset'][config['pipeline']['dataset']])
 
     """ Normalize """
-    X = normalizers[config['pipeline']['normalize']](X, **config['normalize'][config['pipeline']['normalize']])
+    X = normalizers[config['pipeline']['normalize']](
+        X, **config['normalize'][config['pipeline']['normalize']])
     test_size = float(config['dataset']['test_split'])
     if test_size != 0. and test_size != 1.:
-        X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y, test_size=test_size, shuffle=True)
+        X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(
+            X, y, test_size=test_size, shuffle=True)
     else:
         X_train = X
         X_test = []
@@ -108,50 +125,68 @@ def main(args, config, result_csv='result.csv', log_level=logging.DEBUG):
         y_test = []
 
     """ ID estimation """
-    estimated_id = id_estimators[config['pipeline']['id']](X_train, **config['id'][config['pipeline']['id']])
+    estimated_id = id_estimators[config['pipeline']['id']](
+        X_train, **config['id'][config['pipeline']['id']])
     logging.info("Estimated ID: {}".format(estimated_id))
 
     """ Competitors """
     if config['pipeline']['model'] in competitors:
-        logging.info('Competitor-Method: {}'.format(config['pipeline']['model']))
+        logging.info(
+            'Competitor-Method: {}'.format(config['pipeline']['model']))
         logging.info("Calculating feature ranks.")
         sorted_features = models['competitors'](method=config['pipeline']['model'], X=X_train,
-                                   n_clusters=num_classes,
-                                   **config['model'][config['pipeline']['model']])
+                                                n_clusters=num_classes,
+                                                **config['model'][config['pipeline']['model']])
         """ Model evaluation """
         with open(os.path.join(logdir, "sorted_features.txt"), "w") as output:
             for feature in sorted_features:
                 output.write(str(feature) + "\n")
         if len(X_test) == 0:
-            evaluation(config, X_train, y_train, num_classes, sorted_features, logdir=logdir, result_csv=result_csv)
+            evaluation(
+                config,
+                X_train,
+                y_train,
+                num_classes,
+                sorted_features,
+                logdir=logdir,
+                result_csv=result_csv)
         else:
-            evaluation(config, X_test, y_test, num_classes, sorted_features, logdir=logdir, result_csv=result_csv)
+            evaluation(
+                config,
+                X_test,
+                y_test,
+                num_classes,
+                sorted_features,
+                logdir=logdir,
+                result_csv=result_csv)
         return
 
     """ Autoencoder Model """
     """ Loss function and Compile """
-    # extract the dictionary of the regularizers and feed them with the parameter alpha (lambda in the paper)
-    params = regularizers[config['pipeline']['regularizer']](**config['regularizer'][config['pipeline']['regularizer']])
+    # extract the dictionary of the regularizers and feed them with the
+    # parameter alpha (lambda in the paper)
+    params = regularizers[config['pipeline']['regularizer']](
+        **config['regularizer'][config['pipeline']['regularizer']])
     params.update(config['model'][config['pipeline']['model']])
 
     # tensorbord for logging
     tbc = TensorBoard(log_dir=logdir, write_images=True, update_freq='batch',
-                        write_grads=True,
-                        histogram_freq=config['training']['epochs'] // config['training']['hist_n_times'])
+                      write_grads=True,
+                      histogram_freq=config['training']['epochs'] // config['training']['hist_n_times'])
 
     # early stopping to reduce the number of epochs
     callbacks = [tbc]
     if cfg_train['patience'] != 0.:
         early_stopping = EarlyStopping(monitor='val_mean_squared_error', mode='min', restore_best_weights=True,
-                                        patience=cfg_train['patience'])
+                                       patience=cfg_train['patience'])
         callbacks.append(early_stopping)
 
     # select the learner and hand over all parameters
     learner = models[config['pipeline']['model']](input_size=(X_train.shape[1],),
-                                                    n_hidden=estimated_id,
-                                                    metrics=cfg_train['metrics'],
-                                                    lr=cfg_train['lr'],
-                                                    **params)
+                                                  n_hidden=estimated_id,
+                                                  metrics=cfg_train['metrics'],
+                                                  lr=cfg_train['lr'],
+                                                  **params)
     # save the layout and the number of parameters of the model to file
     with open(os.path.join(logdir, 'model_summary.txt'), 'w') as fw:
         learner.summary(print_fn=lambda x: fw.write(x + '\n'))
@@ -162,21 +197,36 @@ def main(args, config, result_csv='result.csv', log_level=logging.DEBUG):
 
     """ Score Function """
     logging.info("Calculating feature ranks.")
-    sorted_features = scoring_functions[config['pipeline']['score']](learner, **config['score'][config['pipeline']['score']])
+    sorted_features = scoring_functions[config['pipeline']['score']](
+        learner, **config['score'][config['pipeline']['score']])
     with open(os.path.join(logdir, "sorted_features.txt"), "w") as output:
         for feature in sorted_features:
             output.write(str(feature) + "\n")
 
     """ Model evaluation """
     if len(X_test) == 0:
-        evaluation(config, X_train, y_train, num_classes, sorted_features, logdir=logdir, result_csv=result_csv)
+        evaluation(
+            config,
+            X_train,
+            y_train,
+            num_classes,
+            sorted_features,
+            logdir=logdir,
+            result_csv=result_csv)
     else:
-        evaluation(config, X_test, y_test, num_classes, sorted_features, logdir=logdir, result_csv=result_csv)
+        evaluation(
+            config,
+            X_test,
+            y_test,
+            num_classes,
+            sorted_features,
+            logdir=logdir,
+            result_csv=result_csv)
 
 
 def evaluation(config, X, y, num_classes, sorted_features, logdir, result_csv):
     """Evaluate the results achieved by feature selection using ACC and R².
-    
+
     Arguments:
         config {dict} -- Config used for the run
         X {list} -- Dataset
@@ -185,12 +235,13 @@ def evaluation(config, X, y, num_classes, sorted_features, logdir, result_csv):
         sorted_features {list} -- List of features sorted starting with the feature having the highest impact
         logdir {str} -- Logging directory
         result_csv {str} -- Name of the result csv file
-    """    
+    """
     # write config file to log directory
     with open(os.path.join(logdir, 'config.json'), 'w') as fw:
         json.dump(config, fw, indent=4)
 
-    # add all other evaluation functions here and log their results to somewhere persistent
+    # add all other evaluation functions here and log their results to
+    # somewhere persistent
     from evaluation import k_means_accuracy, r_squared
     logging.info("Calculating ACC...")
     acc_scores = k_means_accuracy(X, y, num_clusters=num_classes, sorted_features=sorted_features,
@@ -223,7 +274,8 @@ if __name__ == '__main__':
     if args.debug:
         level = logging.DEBUG
         os.environ['TF_CPP_MIN_LOG_LEVEL'] = '0'
-        logging.getLogger('PIL').setLevel(logging.INFO)  # suppress debug messages from pillow
+        # suppress debug messages from pillow
+        logging.getLogger('PIL').setLevel(logging.INFO)
 
     if args.cpu:
         os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"

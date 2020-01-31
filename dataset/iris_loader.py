@@ -3,7 +3,7 @@ from sklearn import datasets
 
 def get_dataset():
     """Loads the iris dataset.
-    
+
     Returns:
         (X, y, n) -- (dataset, labels, #classes)
     """

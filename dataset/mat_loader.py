@@ -4,13 +4,13 @@ import os
 
 def get_dataset(name, path="data/"):
     """Loads the skfeature dataset given its name.
-    
+
     Arguments:
         name {str} -- Name of the dataset
-    
+
     Keyword Arguments:
         path {str} -- Path to the datasets (default: {"data/"})
-    
+
     Returns:
         (X, y, n) -- (dataset, labels, #classes)
     """

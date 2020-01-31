@@ -6,20 +6,22 @@ from argparse import ArgumentParser
 from helper import pandas_helper
 
 
-def save_result(config, results, dir_name=None, path_to_result_file='logs/results.csv'):
+def save_result(config, results, dir_name=None,
+                path_to_result_file='logs/results.csv'):
     """Save results to central csv.
-    
+
     Arguments:
         config {dict} -- Dict containing the config
         results {dict} -- Dict containing acc and r_square and their values
-    
+
     Keyword Arguments:
         dir_name {str} -- Name of the directory to save in (default: {None})
         path_to_result_file {str} -- Path to result file (default: {'logs/results.csv'})
-    """    
+    """
     # extract the parameters used for training
     training = pd.DataFrame.from_dict([config['training']])
-    # extract the steps from the pipeline and merge them with the arguments used
+    # extract the steps from the pipeline and merge them with the arguments
+    # used
     pipeline = pd.DataFrame({i: [str(config['pipeline'][i]) + str(config[i][config['pipeline'][i]])]
                              for i in ['dataset', 'normalize', 'id', 'model', 'score']})
     # combine both information in a one line pandas DataFrame
@@ -62,29 +64,45 @@ def save_result(config, results, dir_name=None, path_to_result_file='logs/result
 if __name__ == '__main__':
     # Parse arguments
     args = ArgumentParser()
-    args.add_argument('--path', type=str, default=os.path.join('results', 'results.csv'))
+    args.add_argument(
+        '--path',
+        type=str,
+        default=os.path.join(
+            'results',
+            'results.csv'))
     args = args.parse_args()
     path_to_result_file = args.path
-    
+
     from helper.paper import datasets, acc_results, r2_results
     paper = pd.concat([pd.DataFrame(acc_results, index=datasets).T, pd.DataFrame(r2_results, index=datasets).T],
                       keys=['acc', 'r_square'], axis=1).stack()
 
     df = pandas_helper.pd_read_multi_column(path_to_result_file)
-    mean = df[[('config', 'dataset'), ('acc', 100), ('r_square', 100)]].groupby(('config', 'dataset')).mean()
+    mean = df[[('config', 'dataset'), ('acc', 100), ('r_square', 100)]].groupby(
+        ('config', 'dataset')).mean()
 
     mean = mean.T.reset_index(level=-1, drop=True).T
-    mean.index = [i.replace("mat_loader{'name': '", "").replace("'}", "") for i in mean.index]
+    mean.index = [
+        i.replace(
+            "mat_loader{'name': '",
+            "").replace(
+            "'}",
+            "") for i in mean.index]
 
-    result = paper.reset_index().join(mean, on='level_1', rsuffix='_experiment', lsuffix='_paper').set_index(['level_0', 'level_1'])
+    result = paper.reset_index().join(mean, on='level_1', rsuffix='_experiment',
+                                      lsuffix='_paper').set_index(['level_0', 'level_1'])
 
-    result['deviance_acc'] = (1 - (result['acc_paper'] / result['acc_experiment'])) * 100
-    result['deviance_r2'] = (1 - (result['r_square_paper'] / result['r_square_experiment'])) * 100
+    result['deviance_acc'] = (
+        1 - (result['acc_paper'] / result['acc_experiment'])) * 100
+    result['deviance_r2'] = (
+        1 - (result['r_square_paper'] / result['r_square_experiment'])) * 100
 
-    results = result[['acc_paper', 'acc_experiment', 'r_square_paper', 'r_square_experiment']]
+    results = result[['acc_paper', 'acc_experiment',
+                      'r_square_paper', 'r_square_experiment']]
     deviance = result[['deviance_acc', 'deviance_r2']]
     print(results)
     print(deviance)
-    std = df[[('config', 'dataset'), ('acc', 100), ('r_square', 100)]].groupby(('config', 'dataset')).std()
+    std = df[[('config', 'dataset'), ('acc', 100), ('r_square', 100)]
+             ].groupby(('config', 'dataset')).std()
     std = std.T.reset_index(level=-1, drop=True).T
     print(std)

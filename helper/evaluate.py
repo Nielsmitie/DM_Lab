@@ -7,14 +7,19 @@ import matplotlib.pyplot as plt
 
 def extract_values(df, column, replace_before='{100: ', replace_after='}'):
     """Extract the values in a column."""
-    df[column] = df[column].str.replace(replace_before, '').str.replace(replace_after, '').astype('float')
+    df[column] = df[column].str.replace(
+        replace_before, '').str.replace(
+        replace_after, '').astype('float')
     df = df[[column, 'dataset']].set_index('dataset').T
     return df
 
 
-def extract_dataset(df, column='dataset', replace_before='mat_loader{\'name\': \'', replace_after='\'}'):
+def extract_dataset(df, column='dataset',
+                    replace_before='mat_loader{\'name\': \'', replace_after='\'}'):
     """Extract the name of the datasets."""
-    df[column] = df[column].str.replace(replace_before, '').str.replace(replace_after, '')
+    df[column] = df[column].str.replace(
+        replace_before, '').str.replace(
+        replace_after, '')
     return df
 
 
@@ -76,9 +81,12 @@ def plot_results():
                                                       'TOX-171': [0.581, 0.580, 0.528, 0.520, 0.559],
                                                       'warpPIE10P': [0.910, 0.897, 0.901, 0.904, 0.895],
                                                       'Yale': [0.703, 0.696, 0.671, 0.677, 0.659]})
-    paper_results_r_squared.index = ['Agnos-s', 'Agnos-w', 'Agnos-g', 'NDFS', 'SPEC']
-    paper_results_r_squared = paper_results_r_squared / paper_results_r_squared.loc['NDFS'] - 1
+    paper_results_r_squared.index = [
+        'Agnos-s', 'Agnos-w', 'Agnos-g', 'NDFS', 'SPEC']
+    paper_results_r_squared = paper_results_r_squared / \
+        paper_results_r_squared.loc['NDFS'] - 1
     paper_results_r_squared.pct_change()
-    paper_results_r_squared = paper_results_r_squared.loc[['Agnos-s', 'Agnos-w', 'Agnos-g', 'SPEC']]
+    paper_results_r_squared = paper_results_r_squared.loc[[
+        'Agnos-s', 'Agnos-w', 'Agnos-g', 'SPEC']]
     paper_results_r_squared.T.plot(kind='bar')
     plt.show()

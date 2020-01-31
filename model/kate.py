@@ -36,7 +36,11 @@ def KATE(input_size, n_hidden, activation_hidden='tanh', activation_output='tanh
     # create the decoder model
     model = Model(outputs=decoder_layer(encoded_input), inputs=encoded_input)
 
-    model.compile(optimizer=tf.keras.optimizers.Adam(lr=lr), loss=loss, metrics=metrics)
+    model.compile(
+        optimizer=tf.keras.optimizers.Adam(
+            lr=lr),
+        loss=loss,
+        metrics=metrics)
 
     return model
 
@@ -75,7 +79,9 @@ class KCompetitive(Layer):
         dim = int(x.get_shape()[1])
         # batch_size = tf.to_float(tf.shape(x)[0])
         if topk > dim:
-            warnings.warn('Warning: topk should not be larger than dim: %s, found: %s, using %s' % (dim, topk, dim))
+            warnings.warn(
+                'Warning: topk should not be larger than dim: %s, found: %s, using %s' %
+                (dim, topk, dim))
             topk = dim
 
         P = (x + tf.abs(x)) / 2
@@ -84,8 +90,13 @@ class KCompetitive(Layer):
         values, indices = tf.nn.top_k(P,
                                       topk / 2)  # indices will be [[0, 1], [2, 1]], values will be [[6., 2.], [5., 4.]]
         # We need to create full indices like [[0, 0], [0, 1], [1, 2], [1, 1]]
-        my_range = tf.expand_dims(tf.range(0, tf.shape(indices)[0]), 1)  # will be [[0], [1]]
-        my_range_repeated = tf.tile(my_range, [1, topk / 2])  # will be [[0, 0], [1, 1]]
+        my_range = tf.expand_dims(
+            tf.range(
+                0,
+                tf.shape(indices)[0]),
+            1)  # will be [[0], [1]]
+        # will be [[0, 0], [1, 1]]
+        my_range_repeated = tf.tile(my_range, [1, topk / 2])
         full_indices = tf.stack([my_range_repeated, indices],
                                 axis=2)  # change shapes to [N, k, 1] and [N, k, 1], to concatenate into [N, k, 2]
         full_indices = tf.reshape(full_indices, [-1, 2])
@@ -107,7 +118,8 @@ class KCompetitive(Layer):
         # P_reset = tf.sparse_to_dense(full_indices, tf.shape(x),
         # tf.reshape(tf.add(values, tf.abs(tmp)), [-1]), default_value=0., validate_indices=False)
         # N_reset = tf.sparse_to_dense(full_indices2, tf.shape(x),
-        # tf.reshape(tf.add(values2, tf.abs(tmp)), [-1]), default_value=0., validate_indices=False)
+        # tf.reshape(tf.add(values2, tf.abs(tmp)), [-1]), default_value=0.,
+        # validate_indices=False)
 
         # 2)
         # factor = 0.
@@ -127,15 +139,23 @@ class KCompetitive(Layer):
         logging.info('Run regular k-sparse')
         dim = int(x.get_shape()[1])
         if topk > dim:
-            warnings.warn('Warning: topk should not be larger than dim: %s, found: %s, using %s' % (dim, topk, dim))
+            warnings.warn(
+                'Warning: topk should not be larger than dim: %s, found: %s, using %s' %
+                (dim, topk, dim))
             topk = dim
 
         k = dim - topk
-        values, indices = tf.nn.top_k(-x, k)  # indices will be [[0, 1], [2, 1]], values will be [[6., 2.], [5., 4.]]
+        # indices will be [[0, 1], [2, 1]], values will be [[6., 2.], [5., 4.]]
+        values, indices = tf.nn.top_k(-x, k)
 
         # We need to create full indices like [[0, 0], [0, 1], [1, 2], [1, 1]]
-        my_range = tf.expand_dims(tf.range(0, tf.shape(indices)[0]), 1)  # will be [[0], [1]]
-        my_range_repeated = tf.tile(my_range, [1, k])  # will be [[0, 0], [1, 1]]
+        my_range = tf.expand_dims(
+            tf.range(
+                0,
+                tf.shape(indices)[0]),
+            1)  # will be [[0], [1]]
+        # will be [[0, 0], [1, 1]]
+        my_range_repeated = tf.tile(my_range, [1, k])
 
         full_indices = tf.stack([my_range_repeated, indices],
                                 axis=2)  # change shapes to [N, k, 1] and [N, k, 1], to concatenate into [N, k, 2]
@@ -148,10 +168,12 @@ class KCompetitive(Layer):
 
         return res
 
+
 class Dense_tied(Dense):
     """
     A fully connected layer with tied weights.
     """
+
     def __init__(self, units,
                  activation=None, use_bias=True,
                  bias_initializer='zeros',
@@ -162,15 +184,16 @@ class Dense_tied(Dense):
         self.tied_to = tied_to
 
         super(Dense_tied, self).__init__(units=units,
-                 activation=activation, use_bias=use_bias,
-                 bias_initializer=bias_initializer,
-                 kernel_regularizer=kernel_regularizer, bias_regularizer=bias_regularizer,
-                 activity_regularizer=activity_regularizer,
-                 kernel_constraint=kernel_constraint, bias_constraint=bias_constraint,
-                 **kwargs)
+                                         activation=activation, use_bias=use_bias,
+                                         bias_initializer=bias_initializer,
+                                         kernel_regularizer=kernel_regularizer, bias_regularizer=bias_regularizer,
+                                         activity_regularizer=activity_regularizer,
+                                         kernel_constraint=kernel_constraint, bias_constraint=bias_constraint,
+                                         **kwargs)
 
     def build(self, input_shape):
-        super(Dense_tied, self).build(input_shape)  # be sure you call this somewhere!
+        # be sure you call this somewhere!
+        super(Dense_tied, self).build(input_shape)
         if self.kernel in self.trainable_weights:
             self.trainable_weights.remove(self.kernel)
 

@@ -5,7 +5,7 @@ import os
 def get_dataset():
     """Load the sonar dataset.
     https://datahub.io/machine-learning/sonar#resource-sonar_arff
-    
+
     Returns:
         (X, y, n) -- (dataset, labels, #classes)
     """

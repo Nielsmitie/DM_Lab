@@ -2,7 +2,7 @@
 
 def regularizer(alpha=0):
     """Returns a dummy-regularizer.
-    
+
     Returns:
         dict -- Dict containing only None-values
     """

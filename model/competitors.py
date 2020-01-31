@@ -12,11 +12,11 @@ from skfeature.utility.sparse_learning import feature_ranking
 def competitor(method, X, metric='cosine', weight_mode='heat_kernel', k=5, t=1, style=0,
                n_selected_features=None, n_clusters=5):
     """Executes competitor FS methods like RANDOM, SPEC, LAP, MDFS or NDFS.
-    
+
     Arguments:
         method {str} -- Name of the Method (RANDOM, SPEC, LAP, MDFS, NDFS)
         X {list} -- Dataset
-    
+
     Keyword Arguments:
         metric {str} -- Choices for different distance measures (default: {'cosine'})
             'euclidean' - use euclidean distance
@@ -36,12 +36,12 @@ def competitor(method, X, metric='cosine', weight_mode='heat_kernel', k=5, t=1, 
             style >= 2, the third feature ranking function, use the first k except 1st eigenvalue
         n_selected_features {None or int} -- Number of selected features (default: {None})
         n_clusters {int} -- Number of clusters; should be equal to number of classes (default: {5})
-    
+
     Returns:
         list -- Sorted list of features, starting with the highest score.
     """
     if n_selected_features is None:
-        n_selected_features = X.shape[1] # Select all features
+        n_selected_features = X.shape[1]  # Select all features
     num_features = X.shape[1]
     if n_selected_features > num_features:
         n_selected_features = num_features
@@ -53,15 +53,22 @@ def competitor(method, X, metric='cosine', weight_mode='heat_kernel', k=5, t=1, 
         return ranking
 
     # affinity matrix
-    kwargs = {"metric": metric, "neighborMode": "knn", "weight_mode": weight_mode, "k": k, 't': t}
+    kwargs = {
+        "metric": metric,
+        "neighborMode": "knn",
+        "weight_mode": weight_mode,
+        "k": k,
+        't': t}
     W = construct_W.construct_W(X, **kwargs)
 
     if method.upper() == "SPEC":
-        return SPEC.feature_ranking(SPEC.spec(X, **{'style': style}), **{'style': style})
+        return SPEC.feature_ranking(
+            SPEC.spec(X, **{'style': style}), **{'style': style})
     elif method.upper() == "LAP":
         return lap_score.feature_ranking(lap_score.lap_score(X, W=W))
     elif method.upper() == "MCFS":
-        return MCFS.feature_ranking(MCFS.mcfs(X, n_selected_features=n_selected_features, W=W, n_clusters=n_clusters))
+        return MCFS.feature_ranking(MCFS.mcfs(
+            X, n_selected_features=n_selected_features, W=W, n_clusters=n_clusters))
     elif method.upper() == "NDFS":
         return feature_ranking(NDFS.ndfs(X, W=W, n_clusters=n_clusters))
     else:
@@ -70,8 +77,8 @@ def competitor(method, X, metric='cosine', weight_mode='heat_kernel', k=5, t=1, 
 
 def get_model(*args, **kwargs):
     """Returns result of competitor method.
-    
+
     Returns:
         list -- Scores of the features
-    """    
+    """
     return competitor(*args, **kwargs)
