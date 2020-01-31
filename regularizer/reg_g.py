@@ -1,36 +1,57 @@
 import tensorflow as tf
 from tensorflow.keras import losses as keras_loss
 from tensorflow.python.keras import backend as K
-from loss.loss_w import l1_minus_l2
-from tf.keras.backend import tanh
+from regularizer.reg_w import l1_minus_l2
+from tensorflow.keras.backend import tanh
 
 
-# TODO: WIP
+# TODO: WORK IN PROGRESS
 
-def losses(alpha):
+
+def regularizer(alpha):
+    """Return AgnoS-G gradient regularizer.
+    
+    Arguments:
+        alpha {float} -- Regularization factor
+    
+    Returns:
+        dict -- Dict containing gradient_regularizer
+    """    
     return {'gradient_regularizer': loss_wrapper(alpha)}
 
 
 def loss_wrapper(alpha):
-    """
-    First layer to save alpha for the session
-    :param alpha: float value. Strength of regularization
-    :return:
+    """First layer to save alpha for the session.
+    
+    Arguments:
+        alpha {float} -- Regularization factor
+    
+    Returns:
+        function -- g_closure
     """
     def g_closure(intermediate_layer_model, loss_func):
-        """
-        Second layer. Wrapper around loss function, because loss can take only two arguments.
-        :param intermediate_layer_model: Pointer to
-        :param loss_func:
-        :return:
-        """
+        """Second layer. Wrapper around loss function, because loss can only take two arguments.
+        
+        Arguments:
+            intermediate_layer_model {layer} -- Pointer to intermediate layer
+            loss_func {function} -- Loss function
+        
+        Returns:
+            function -- loss_g
+        """        
         loss_func = keras_loss.get(loss_func)
 
         def loss_g(y_true, y_pred):
-            """
-            Calculating the gradients of each hidden variable w.r.t. each original feature at every datapoint,
+            """Calculating the gradients of each hidden variable w.r.t. each original feature at every datapoint,
             then aggregating all these small gradients is both tough and very computationally expensive
             (three nested for loops) in the general case.
+            
+            Arguments:
+                y_true {list} -- True labels
+                y_pred {list} -- Predicted labels
+            
+            Returns:
+                function -- loss
             """
             loss = loss_func(y_true, y_pred)
 

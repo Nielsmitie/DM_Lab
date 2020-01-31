@@ -9,6 +9,13 @@ from helper import paper
 
 
 def run_experiments(config, experiment_name, repeats):
+    """Run the experiments with the given parameters and hardcoded id.
+    
+    Arguments:
+        config {dict} -- Loaded config file
+        experiment_name {str} -- Name of the results file
+        repeats {int} -- Number of repeats
+    """    
     for dataset, id in paper.ids.items():
         for repeat in range(repeats):
             config['dataset'][config['pipeline']['dataset']]['name'] = dataset
@@ -18,9 +25,14 @@ def run_experiments(config, experiment_name, repeats):
 
 
 def parse_args():
+    """Parse arguments from command line.
+    
+    Returns:
+        Namespace -- Parsed arguments
+    """    
     args = ArgumentParser()
     args.add_argument('--config', type=str, default=os.path.join('configs', 'paper_config.json'))
-    args.add_argument('--repeats', type=int, default=4)
+    args.add_argument('--repeats', type=int, default=10)
     args.add_argument('--debug', action='store_true')
     args.add_argument('--cpu', action='store_true', help='train on CPU')
     args.add_argument('--experiment_name', type=str, default='results.csv')

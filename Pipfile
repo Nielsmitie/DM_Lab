@@ -13,6 +13,7 @@ scikit-learn = "*"
 scipy = "*"
 jupyter = "*"
 pylint = "*"
+matplotlib = "*"
 skfeature = {editable = true,git = "https://github.com/jundongl/scikit-feature"}
 
 [requires]

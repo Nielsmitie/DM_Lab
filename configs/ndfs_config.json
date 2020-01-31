@@ -4,21 +4,26 @@
     "normalize": "normalizer",
     "id": "hardcode",
     "model": "NDFS",
-    "loss": "dummy_loss",
+    "regularizer": "dummy_reg",
     "score": "dummy_score"
   },
   "training": {
-    "lr": 1e-4,
-    "epochs": 10,
-    "batch_size": 32,
+    "lr": 0,
+    "epochs": 0,
+    "batch_size": 0,
     "metrics": ["mean_squared_error"],
-    "validation_split": 0.1,
-    "repetitions": 10,
-    "patience": 50,
-    "hist_n_times": 10
+    "validation_split": 0,
+    "patience": 0,
+    "hist_n_times": 0
   },
   "dataset": {
-    "mat_loader": {"name":  "arcene"},
+    "mat_loader": {"name": "arcene"},
+    "reuters_loader": {},
+    "mnist_loader": {},
+    "lung_loader": {},
+    "sonar_loader": {},
+    "newsgroups_loader": {},
+    "olivetti_loader": {},
     "iris_loader": {},
     "test_split": 0.0
   },
@@ -29,19 +34,18 @@
   "id": {
     "pca_estimate": {"n_components":  0.99},
     "id_estimation": {},
-    "hardcode": {"id":  10}
+    "hardcode": {"id":  40}
   },
   "model": {
-    "auto_encoder": {
-      "activation_hidden": "tanh",
-      "activation_output": "tanh",
-      "loss": "mean_squared_error",
-      "kernel_initializer": "glorot_uniform"
-    },
-    "NDFS": {}
+    "NDFS": {
+      "metric": "euclidean",
+      "weight_mode": "heat_kernel",
+      "k": 5,
+      "t": 1
+    }
   },
-  "loss": {
-    "dummy_loss": {}
+  "regularizer": {
+    "dummy_reg": {}
   },
   "score": {
     "dummy_score": {}

@@ -4,17 +4,16 @@
     "normalize": "normalizer",
     "id": "pca_estimate",
     "model": "auto_encoder",
-    "loss": "loss_s",
+    "regularizer": "reg_s",
     "score": "score_s"
   },
   "training": {
     "lr": 1e-2,
-    "epochs": 1000,
+    "epochs": 150,
     "batch_size": 8,
     "metrics": ["mean_squared_error"],
-    "validation_split": 0.1,
-    "repetitions": 3,
-    "patience": 50,
+    "validation_split": 0,
+    "patience": 0,
     "hist_n_times": 10
   },
   "dataset": {
@@ -46,15 +45,15 @@
     },
     "LAP": {},
     "NDFS": {},
-    "MCFS": {"n_selected_features": 100},
+    "MCFS": {},
     "SPEC": {},
-    "RANDOM": {"n_selected_features": 100}
+    "RANDOM": {}
   },
-  "loss": {
-    "dummy_loss": {},
-    "loss_w": {"alpha": 1},
-    "loss_g": {"alpha": 1},
-    "loss_s": {"alpha": 1}
+  "regularizer": {
+    "dummy_reg": {},
+    "reg_w": {"alpha": 1},
+    "reg_g": {"alpha": 1},
+    "reg_s": {"alpha": 1}
   },
   "score": {
     "dummy_score": {},

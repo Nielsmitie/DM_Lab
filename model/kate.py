@@ -9,7 +9,6 @@ import logging
 
 def KATE(input_size, n_hidden, activation_hidden='tanh', activation_output='tanh', loss='binary_crossentropy', lr=1e-4,
          metrics=None, comp_topk=None, kernel_initializer='glorot_normal'):
-
     if metrics is None:
         metrics = ['mae']
     input_layer = Input(shape=input_size)
@@ -47,9 +46,7 @@ def get_model(*args, **kwargs):
 
 
 class KCompetitive(Layer):
-    '''Applies K-Competitive layer.
-    # Arguments
-    '''
+    """Applies K-Competitive layer."""
 
     def __init__(self, topk, ctype, **kwargs):
         self.topk = topk
@@ -176,7 +173,6 @@ class Dense_tied(Dense):
         super(Dense_tied, self).build(input_shape)  # be sure you call this somewhere!
         if self.kernel in self.trainable_weights:
             self.trainable_weights.remove(self.kernel)
-
 
     def call(self, x, mask=None):
         # Use tied weights

@@ -5,9 +5,14 @@ from sklearn import metrics
 
 # TODO: Validate
 def get_id(dataset):
-    """
-    Estimate the Intrisitc Dimension the way they did in the paper.
-    """
+    """Estimate the Intrisitc Dimension the way they did in the paper.
+    
+    Arguments:
+        dataset {list} -- Dataset
+    
+    Returns:
+        int -- Intristic Dimension
+    """    
     # calculate pairwise distance
     distances = metrics.pairwise_distances(dataset, Y=None, metrics="euclidian", n_jobs=None)
 
@@ -33,4 +38,4 @@ def get_id(dataset):
     for i in range(len(f)):
         d_sum += - ((math.log(1 - f[i])) / math.log(r2r1_quotient[i]))
 
-    return d_sum# / len(f)
+    return d_sum

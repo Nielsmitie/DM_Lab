@@ -4,7 +4,7 @@
     "normalize": "normalizer",
     "id": "hardcode",
     "model": "auto_encoder",
-    "loss": "loss_g",
+    "regularizer": "reg_g",
     "score": "score_g"
   },
   "training": {
@@ -13,12 +13,17 @@
     "batch_size": 8,
     "metrics": ["mean_squared_error"],
     "validation_split": 0,
-    "repetitions": 10,
     "patience": 0,
     "hist_n_times": 10
   },
   "dataset": {
     "mat_loader": {"name": "arcene"},
+    "reuters_loader": {},
+    "mnist_loader": {},
+    "lung_loader": {},
+    "sonar_loader": {},
+    "newsgroups_loader": {},
+    "olivetti_loader": {},
     "iris_loader": {},
     "test_split": 0.0
   },
@@ -39,10 +44,10 @@
       "kernel_initializer": "glorot_normal"
     }
   },
-  "loss": {
-    "loss_w": {"alpha": 1},
-    "loss_g": {"alpha": 1},
-    "loss_s": {"alpha": 1}
+  "regularizer": {
+    "reg_w": {"alpha": 1},
+    "reg_g": {"alpha": 1},
+    "reg_s": {"alpha": 1}
   },
   "score": {
     "score_w": {},

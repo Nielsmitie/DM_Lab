@@ -6,13 +6,17 @@ from tensorflow.keras.regularizers import l1
 from tensorflow.keras.constraints import MinMaxNorm
 
 
-def losses(alpha):
-    return {
-        'activity_regularizer': None,
-        'kernel_regularizer': None,
-        'kernel_constraint': None,
-        'slack_regularizer': add_slack_layer(alpha)
-    }
+def regularizer(alpha):
+    """Returns slack regularizer which is used in the autoencoder 
+    to create a layer with slack variables.
+    
+    Arguments:
+        alpha {float} -- Regularization factor
+    
+    Returns:
+        dict -- Contains slack_regularizer to create slack layer
+    """    
+    return {'slack_regularizer': add_slack_layer(alpha)}
 
 
 def add_slack_layer(alpha):

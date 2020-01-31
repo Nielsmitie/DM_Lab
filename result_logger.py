@@ -1,11 +1,22 @@
 import json
 import pandas as pd
 import os
+from argparse import ArgumentParser
 
 from helper import pandas_helper
 
 
 def save_result(config, results, dir_name=None, path_to_result_file='logs/results.csv'):
+    """Save results to central csv.
+    
+    Arguments:
+        config {dict} -- Dict containing the config
+        results {dict} -- Dict containing acc and r_square and their values
+    
+    Keyword Arguments:
+        dir_name {str} -- Name of the directory to save in (default: {None})
+        path_to_result_file {str} -- Path to result file (default: {'logs/results.csv'})
+    """    
     # extract the parameters used for training
     training = pd.DataFrame.from_dict([config['training']])
     # extract the steps from the pipeline and merge them with the arguments used
@@ -49,15 +60,12 @@ def save_result(config, results, dir_name=None, path_to_result_file='logs/result
 
 
 if __name__ == '__main__':
-    path_to_result_file = 'results/paper_agnos_s.csv'
-    '''
-
-    with open('configs/paper_config.json') as fr:
-        config = json.load(fr)
-    save_result(config, {'acc': {500: 0.5}, 'r_square': {500: 0.5}}, path_to_result_file=path_to_result_file)
-    save_result(config, {'acc': {500: 0.5}, 'r_square': {500: 0.5}}, path_to_result_file=path_to_result_file)
-    save_result(config, {'acc': {500: 0.5}, 'r_square': {500: 0.5}}, path_to_result_file=path_to_result_file)
-    '''
+    # Parse arguments
+    args = ArgumentParser()
+    args.add_argument('--path', type=str, default=os.path.join('results', 'results.csv'))
+    args = args.parse_args()
+    path_to_result_file = args.path
+    
     from helper.paper import datasets, acc_results, r2_results
     paper = pd.concat([pd.DataFrame(acc_results, index=datasets).T, pd.DataFrame(r2_results, index=datasets).T],
                       keys=['acc', 'r_square'], axis=1).stack()
@@ -68,7 +76,7 @@ if __name__ == '__main__':
     mean = mean.T.reset_index(level=-1, drop=True).T
     mean.index = [i.replace("mat_loader{'name': '", "").replace("'}", "") for i in mean.index]
 
-    result = paper.reset_index(level=1).join(mean, on='level_1', rsuffix='_paper', lsuffix='_experiment').set_index('level_1', append=True)
+    result = paper.reset_index().join(mean, on='level_1', rsuffix='_experiment', lsuffix='_paper').set_index(['level_0', 'level_1'])
 
     result['deviance_acc'] = (1 - (result['acc_paper'] / result['acc_experiment'])) * 100
     result['deviance_r2'] = (1 - (result['r_square_paper'] / result['r_square_experiment'])) * 100
@@ -80,4 +88,3 @@ if __name__ == '__main__':
     std = df[[('config', 'dataset'), ('acc', 100), ('r_square', 100)]].groupby(('config', 'dataset')).std()
     std = std.T.reset_index(level=-1, drop=True).T
     print(std)
-    # print(df)
