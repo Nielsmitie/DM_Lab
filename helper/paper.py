@@ -1,8 +1,9 @@
 
 
-datasets = ['arcene', 'Isolet', 'ORL', 'pixraw10P', 'Prostate-GE', 'TOX-171', 'warpPIE10P', 'Yale']
+# datasets = ['arcene', 'Isolet', 'ORL', 'pixraw10P', 'Prostate-GE', 'TOX-171', 'warpPIE10P', 'Yale']
+datasets = ['ORL', 'pixraw10P', 'Prostate-GE', 'TOX-171', 'warpPIE10P', 'Yale']
 
-ids = dict(zip(datasets, [40, 9, 6, 4, 23, 15, 3, 10]))
+ids = dict(zip(datasets, [6, 4, 23, 15, 3, 10]))
 
 acc_results = {
     'agnos_s': [0.665, 0.536, 0.570, 0.812, 0.608, 0.404, 0.271, 0.509],

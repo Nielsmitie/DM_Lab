@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow.keras import losses as keras_loss
 from tensorflow.python.keras import backend as K
 from loss.loss_w import l1_minus_l2
-from tf.keras.backend import tanh
+from tensorflow.keras.backend import tanh
 
 
 # TODO: WIP
