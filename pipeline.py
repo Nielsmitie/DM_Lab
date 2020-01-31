@@ -245,7 +245,7 @@ def evaluation(config, X, y, num_classes, sorted_features, logdir, result_csv):
     from evaluation import k_means_accuracy, r_squared
     logging.info("Calculating ACC...")
     acc_scores = k_means_accuracy(X, y, num_clusters=num_classes, sorted_features=sorted_features,
-                                  top_n=config['evaluation']['k_means_accuracy']['top_n'], repetitions=1)
+                                  top_n=config['evaluation']['k_means_accuracy']['top_n'], repetitions=20) # TODO: Add repetitions to configs
     logging.info("ACC: {}".format(acc_scores))
     logging.info("Calculating R squared...")
     r_scores = r_squared(X, y, num_clusters=num_classes, sorted_features=sorted_features,

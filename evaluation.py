@@ -32,7 +32,7 @@ def k_means_accuracy(X, y, num_clusters, sorted_features,
             nmi, acc = evaluation(X[:, sorted_features[:n]], num_clusters, y)
             nmi_total += nmi
             acc_total += acc
-        results[n] = float(acc) / repetitions
+        results[n] = float(acc_total) / repetitions
 
     return results
 
