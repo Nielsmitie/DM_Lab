@@ -73,6 +73,10 @@ if __name__ == '__main__':
     args = args.parse_args()
     path_to_result_file = args.path
 
+    pd.set_option('display.max_rows', 500)
+    pd.set_option('display.max_columns', 500)
+    pd.set_option('display.width', 1000)
+
     from helper.paper import datasets, acc_results, r2_results
     paper = pd.concat([pd.DataFrame(acc_results, index=datasets).T, pd.DataFrame(r2_results, index=datasets).T],
                       keys=['acc', 'r_square'], axis=1).stack()
@@ -89,19 +93,20 @@ if __name__ == '__main__':
             "'}",
             "") for i in mean.index]
 
-    result = paper.reset_index().join(mean, on='level_1', rsuffix='_experiment',
-                                      lsuffix='_paper').set_index(['level_0', 'level_1'])
+    result = paper.reset_index().join(mean, on='level_1', rsuffix='_experiment', lsuffix='_paper').set_index(['level_0', 'level_1'])
 
-    result['deviance_acc'] = (
-        1 - (result['acc_paper'] / result['acc_experiment'])) * 100
-    result['deviance_r2'] = (
-        1 - (result['r_square_paper'] / result['r_square_experiment'])) * 100
+    result['deviance_acc'] = (1 - (result['acc_paper'] / result['acc_experiment'])) * 100
+    result['diff_acc'] = result['acc_paper'] - result['acc_experiment']
+    result['deviance_r2'] = (1 - (result['r_square_paper'] / result['r_square_experiment'])) * 100
+    result['diff_r2'] = result['r_square_paper'] - result['r_square_experiment']
 
     results = result[['acc_paper', 'acc_experiment',
                       'r_square_paper', 'r_square_experiment']]
     deviance = result[['deviance_acc', 'deviance_r2']]
+    diff = result[['diff_acc', 'diff_r2']]
     print(results)
     print(deviance)
+    print(diff)
     std = df[[('config', 'dataset'), ('acc', 100), ('r_square', 100)]
              ].groupby(('config', 'dataset')).std()
     std = std.T.reset_index(level=-1, drop=True).T

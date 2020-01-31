@@ -116,8 +116,7 @@ def main(args, config, result_csv='result.csv', log_level=logging.DEBUG):
         X, **config['normalize'][config['pipeline']['normalize']])
     test_size = float(config['dataset']['test_split'])
     if test_size != 0. and test_size != 1.:
-        X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(
-            X, y, test_size=test_size, shuffle=True)
+        X_train, X_test, y_train, y_test = sklearn.model_selection.train_test_split(X, y, test_size=test_size, shuffle=True, stratify=y)
     else:
         X_train = X
         X_test = []
