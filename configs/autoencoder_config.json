@@ -3,14 +3,14 @@
     "dataset": "mat_loader",
     "normalize": "normalizer",
     "id": "hardcode",
-    "model": "SPEC",
+    "model": "auto_encoder",
     "regularizer": "dummy_reg",
-    "score": "dummy_score"
+    "score": "score_w"
   },
   "training": {
-    "lr": 0,
+    "lr": 1e-2,
     "epochs": 150,
-    "batch_size": 0,
+    "batch_size": 8,
     "metrics": ["mean_squared_error"],
     "validation_split": 0,
     "patience": 0,
@@ -28,22 +28,32 @@
     "test_split": 0.0
   },
   "normalize": {
-    "dummy_normalizer": {},
+    "dummy_normalizer" : {},
     "normalizer": {}
   },
   "id": {
     "pca_estimate": {"n_components":  0.99},
     "id_estimation": {},
-    "hardcode": {"id":  40}
+    "hardcode": {"id": 40}
   },
   "model": {
-    "SPEC": {"style": 0}
+    "auto_encoder": {
+      "activation_hidden": "tanh",
+      "activation_output": "tanh",
+      "loss": "mean_squared_error",
+      "kernel_initializer": "glorot_normal"
+    }
   },
   "regularizer": {
-    "dummy_reg": {}
+    "reg_w": {"alpha": 1},
+    "reg_g": {"alpha": 1},
+    "reg_s": {"alpha": 1},
+    "dummy_reg": {"alpha":  1}
   },
   "score": {
-    "dummy_score": {}
+    "score_w": {},
+    "score_s": {},
+    "score_g": {}
   },
   "evaluation": {
     "k_means_accuracy": {
