@@ -2,18 +2,29 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
+"""Helper functions for evaluation"""
+
+
 def extract_values(df, column, replace_before='{100: ', replace_after='}'):
-    df[column] = df[column].str.replace(replace_before, '').str.replace(replace_after, '').astype('float')
+    """Extract the values in a column."""
+    df[column] = df[column].str.replace(
+        replace_before, '').str.replace(
+        replace_after, '').astype('float')
     df = df[[column, 'dataset']].set_index('dataset').T
     return df
 
 
-def extract_dataset(df, column='dataset', replace_before='mat_loader{\'name\': \'', replace_after='\'}'):
-    df[column] = df[column].str.replace(replace_before, '').str.replace(replace_after, '')
+def extract_dataset(df, column='dataset',
+                    replace_before='mat_loader{\'name\': \'', replace_after='\'}'):
+    """Extract the name of the datasets."""
+    df[column] = df[column].str.replace(
+        replace_before, '').str.replace(
+        replace_after, '')
     return df
 
 
 def merge_own_and_paper(df):
+    """Merge own and paper results"""
     df = extract_dataset(df)
     df_acc = extract_values(df, 'acc')
     df_r_square = extract_values(df, 'r_square')
@@ -48,11 +59,12 @@ def merge_own_and_paper(df):
 
 
 def extract_knowledge(df):
+    """Print information in given DataFrame"""
     print(df)
     print('ACC')
     acc_pct_diff = df.loc['ACC'].pct_change().dropna() * 100
     print(acc_pct_diff)
-    print('R Squared')
+    print('R²')
     r_square_pct_diff = df.loc['R Squared'].pct_change().dropna() * 100
     acc_pct_diff.T.plot(kind='bar')
     plt.show()
@@ -60,6 +72,7 @@ def extract_knowledge(df):
 
 
 def plot_results():
+    """Plot R² results."""
     paper_results_r_squared = pd.DataFrame.from_dict({'arcene': [0.6100, 0.460, 0.560, 0.490, 0.548],
                                                       'Isolet': [0.763, 0.762, 0.701, 0.747, 0.733],
                                                       'ORL': [0.800, 0.795, 0.780, 0.796, 0.769],
@@ -68,9 +81,12 @@ def plot_results():
                                                       'TOX-171': [0.581, 0.580, 0.528, 0.520, 0.559],
                                                       'warpPIE10P': [0.910, 0.897, 0.901, 0.904, 0.895],
                                                       'Yale': [0.703, 0.696, 0.671, 0.677, 0.659]})
-    paper_results_r_squared.index = ['Agnos-s', 'Agnos-w', 'Agnos-g', 'NDFS', 'SPEC']
-    paper_results_r_squared = paper_results_r_squared / paper_results_r_squared.loc['NDFS'] - 1
+    paper_results_r_squared.index = [
+        'Agnos-s', 'Agnos-w', 'Agnos-g', 'NDFS', 'SPEC']
+    paper_results_r_squared = paper_results_r_squared / \
+        paper_results_r_squared.loc['NDFS'] - 1
     paper_results_r_squared.pct_change()
-    paper_results_r_squared = paper_results_r_squared.loc[['Agnos-s', 'Agnos-w', 'Agnos-g', 'SPEC']]
+    paper_results_r_squared = paper_results_r_squared.loc[[
+        'Agnos-s', 'Agnos-w', 'Agnos-g', 'SPEC']]
     paper_results_r_squared.T.plot(kind='bar')
     plt.show()
