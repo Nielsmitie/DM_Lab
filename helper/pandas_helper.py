@@ -28,6 +28,6 @@ def pd_read_multi_column(path_to_file, *args, **kwargs):
     r.columns = r.columns.astype('float')
 
     df = pd.concat([acc, r, df['config']], axis=1,
-                   keys=['r_square', 'acc', 'config'])
+                   keys=['acc', 'r_square', 'config'])
 
     return df
