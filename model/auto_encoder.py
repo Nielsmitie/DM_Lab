@@ -46,7 +46,8 @@ def AutoEncoder(input_size, n_hidden, activation_hidden='tanh', activation_outpu
     # paper stated they used tanh activation
     hidden = Dense(n_hidden, activation=activation_hidden, kernel_regularizer=kernel_regularizer,
                    activity_regularizer=activity_regularizer,
-                   kernel_initializer=kernel_initializer, kernel_constraint=UnitNorm(axis=[0, 1]),
+                   kernel_initializer=kernel_initializer,
+                   # kernel_constraint=UnitNorm(axis=[0, 1]),
                    name='encoder')(tmp_input_layer)
     # TODO: what glorot method is used glorot_normal or glorot_uniform. Both are mentioned in the same paper.
     # used None, tanh is bound to +/-1 and values can be more than +1 and less than -1 ?!

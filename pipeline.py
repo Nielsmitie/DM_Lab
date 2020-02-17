@@ -10,7 +10,7 @@ import sklearn
 import sys as sys
 
 import tensorflow as tf
-from tensorflow.keras.callbacks import TensorBoard, EarlyStopping
+from tensorflow.keras.callbacks import TensorBoard, EarlyStopping, Callback
 
 # Import all special directories
 import dataset
@@ -176,6 +176,22 @@ def main(args, config, result_csv='result.csv', log_level=logging.DEBUG):
 
     # early stopping to reduce the number of epochs
     callbacks = [tbc]
+
+    # custom callback to normalize the weights at the end of each epoch to one:
+    class NormalizeWeights(Callback):
+        # normalize the weights of the encoder layer at the end of an epoch to the length of 1
+        def on_epoch_end(self, epoch, logs=None):
+            # get the encoder layer. From there get the weights consisting of kernel and bias
+            weights = self.model.get_layer('encoder').get_weights()
+            weights[0] = weights[0] / np.sqrt(np.sum(np.square(weights[0]), keepdims=True))
+
+            self.model.get_layer('encoder').set_weights(weights)
+
+    if config['pipeline']['regularizer'] == 'reg_s' or \
+            config['pipeline']['regularizer'] == 'reg_w' or \
+            config['pipeline']['regularizer'] == 'reg_g':
+        callbacks.append(NormalizeWeights())
+
     if cfg_train['patience'] != 0.:
         early_stopping = EarlyStopping(monitor='val_mean_squared_error', mode='min', restore_best_weights=True,
                                        patience=cfg_train['patience'])
