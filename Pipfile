@@ -15,6 +15,7 @@ jupyter = "*"
 pylint = "*"
 matplotlib = "*"
 skfeature = {editable = true,git = "https://github.com/jundongl/scikit-feature"}
+seaborn = "*"
 
 [requires]
 python_version = "3.7"

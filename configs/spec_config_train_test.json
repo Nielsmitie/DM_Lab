@@ -4,17 +4,17 @@
     "normalize": "normalizer",
     "id": "hardcode",
     "model": "SPEC",
-    "loss": "dummy_loss",
+    "regularizer": "dummy_reg",
     "score": "dummy_score"
   },
   "training": {
     "lr": 0,
-    "epochs": 0,
+    "epochs": 150,
     "batch_size": 0,
     "metrics": ["mean_squared_error"],
     "validation_split": 0,
     "patience": 0,
-    "hist_n_times": 0
+    "hist_n_times": 10
   },
   "dataset": {
     "mat_loader": {"name": "arcene"},
@@ -25,7 +25,7 @@
     "newsgroups_loader": {},
     "olivetti_loader": {},
     "iris_loader": {},
-    "test_split": 0.2
+    "test_split": 0.1
   },
   "normalize": {
     "dummy_normalizer": {},
@@ -34,13 +34,13 @@
   "id": {
     "pca_estimate": {"n_components":  0.99},
     "id_estimation": {},
-    "hardcode": {"id":  10}
+    "hardcode": {"id":  40}
   },
   "model": {
-    "SPEC": {}
+    "SPEC": {"style": 0}
   },
-  "loss": {
-    "dummy_loss": {}
+  "regularizer": {
+    "dummy_reg": {}
   },
   "score": {
     "dummy_score": {}
