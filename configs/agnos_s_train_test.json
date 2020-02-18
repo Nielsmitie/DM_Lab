@@ -4,7 +4,7 @@
     "normalize": "normalizer",
     "id": "hardcode",
     "model": "auto_encoder",
-    "loss": "loss_s",
+    "regularizer": "reg_s",
     "score": "score_s"
   },
   "training": {
@@ -14,7 +14,7 @@
     "metrics": ["mean_squared_error"],
     "validation_split": 0.1,
     "repetitions": 1,
-    "patience": 150,
+    "patience": 50,
     "hist_n_times": 10
   },
   "dataset": {
@@ -45,10 +45,10 @@
       "kernel_initializer": "glorot_normal"
     }
   },
-  "loss": {
-    "loss_s": {"alpha": 1},
-    "loss_w": {"alpha": 1},
-    "loss_g": {"alpha": 1}
+  "regularizer": {
+    "reg_s": {"alpha": 1},
+    "reg_w": {"alpha": 1},
+    "reg_g": {"alpha": 1}
   },
   "score": {
     "score_w": {},
