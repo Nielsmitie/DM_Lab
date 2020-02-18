@@ -8,7 +8,7 @@ from helper import pandas_helper
 from helper.paper import datasets, acc_results, r2_results
 
 plt.style.use('fivethirtyeight')
-path_to_result_file = 'logs/paper_agnos_s_reworked.csv'
+path_to_result_file = 'results/paper_agnos_s_reworked.csv'
 model = 'agnos_s'
 
 
@@ -38,7 +38,7 @@ test = list(acc.columns)
 ax = acc.boxplot(fontsize=9)
 plt.show()
 
-r2.boxplot()
+r2.boxplot(fontsize=9)
 plt.show()
 
 print('test')
