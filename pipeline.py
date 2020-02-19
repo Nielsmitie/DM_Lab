@@ -74,6 +74,7 @@ def parse_args():
         default=os.path.join(
             'configs',
             'paper_config.json'))
+    args.add_argument('--result_csv', type=str, default=None)
     return args.parse_args()
 
 
@@ -306,4 +307,4 @@ if __name__ == '__main__':
     with open(args.config) as fr:
         config = json.load(fr)
 
-    main(args, config, log_level=level)
+    main(args, config, log_level=level, result_csv=args.result_csv)
