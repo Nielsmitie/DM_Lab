@@ -75,7 +75,7 @@ def box_plot_results(df,
             print('saving plot to: {}'.format(os.path.join(path, file_name)))
             if not os.path.exists(path):
                 os.makedirs(path)
-            plt.savefig(os.path.join(path, file_name))
+            plt.savefig(os.path.join(path, file_name), bbox_inches='tight')
             plt.show()
 
     print('test')
