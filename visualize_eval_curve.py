@@ -8,7 +8,7 @@ import os
 
 from helper import pandas_helper
 
-path_to_result_file = 'logs/curves.csv'
+path_to_result_file = 'results/curves.csv'
 metrics = ['acc', 'r_square']
 title = 'Results with different top n features for evaluation: '
 save_path = os.path.join('pics', 'curve')
