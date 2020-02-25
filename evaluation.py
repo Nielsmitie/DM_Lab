@@ -35,11 +35,11 @@ def k_means_accuracy(X, y, num_clusters, sorted_features,
     if not isinstance(top_n, list):
         top_n = [top_n]
 
-    pool = mp.Pool(mp.cpu_count())
-
-    results = dict(pool.starmap(score_acc, [(n, X, sorted_features, num_clusters, y, repetitions) for n in top_n]))
-
-    return results
+    if len(top_n) > 1:
+        with mp.Pool(mp.cpu_count()) as pool:
+            results = dict(pool.starmap(score_acc, [(n, X, sorted_features, num_clusters, y, repetitions) for n in top_n]))
+        return results
+    return dict([score_acc(top_n[0], X, sorted_features, num_clusters, y, repetitions)])
 
 
 def score_r_square(n_, X_, sorted_features_):
@@ -73,10 +73,8 @@ def r_squared(X, y, num_clusters, sorted_features, top_n=100):
     if not isinstance(top_n, list):
         top_n = [top_n]
 
-    pool = mp.Pool(mp.cpu_count())
-
-    results = dict(pool.starmap(score_r_square, [(n, X, sorted_features) for n in top_n]))
-
-    print('r_square evaluation done. ({})'.format(results))
-
-    return results
+    if len(top_n) > 1:
+        with mp.Pool(mp.cpu_count()) as pool:
+            results = dict(pool.starmap(score_r_square, [(n, X, sorted_features) for n in top_n]))
+        return results
+    return dict([score_r_square(top_n[0], X, sorted_features)])
