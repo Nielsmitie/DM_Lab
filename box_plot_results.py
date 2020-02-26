@@ -78,8 +78,6 @@ def box_plot_results(df,
             plt.savefig(os.path.join(path, file_name), bbox_inches='tight')
             plt.show()
 
-    print('test')
-
 
 def parse_args():
     # Parse arguments

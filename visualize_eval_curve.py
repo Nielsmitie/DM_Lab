@@ -30,6 +30,3 @@ for metric in metrics:
     plt.savefig(os.path.join(save_path, title.strip().replace(':', '') + '_' + metric + '.png'), bbox_inches='tight')
 
     plt.show()
-
-print('test')
-
