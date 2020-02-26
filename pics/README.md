@@ -18,3 +18,9 @@
 ```shell script
 --path results/train_test_paper_agnos_s_reworked.csv --second_path results/spec_train_test_reworked.csv --model "agnos_s" --other_df_name SPEC --df_name "Agnos S" --save pics --title "Comparing Agnos S behaviour with SPEC on unseen data: "
 ```
+
+### Comparing with validation set
+
+```shell script
+--path results/agnos_s_early_stopping.csv --second_path results/paper_agnos_s_reworked.csv --model "agnos_s" --other_df_name "Agnos S" --df_name "Agnos S with valid" --save pics --title "Comparing Agnos Results with and without early stopping: "
+```
